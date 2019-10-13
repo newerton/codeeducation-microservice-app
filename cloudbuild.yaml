@@ -8,5 +8,5 @@ steps:
     args: ["ps"]
 
   - id: "Rodando composer"
-    name: "gcr.io/$PROJECT_ID/docker"
-    args: ["ps"]
+    name: "gcr.io/cloud-builders/docker"
+    args: ["exec", "-t", "app", "composer", "install"]
