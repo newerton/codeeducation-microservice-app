@@ -7,3 +7,14 @@ Publicando imagem Laravel
 
 Desafio Docker  
 [newerton/laravel6-optimized](https://hub.docker.com/r/newerton/laravel6-optimized)
+
+---
+
+Desafio Docker - Go Lang - Code Education Rocks  
+https://github.com/newerton/codeeducation-microservice-devops
+
+ou
+
+```bash
+docker run newerton/codeeducation
+```
