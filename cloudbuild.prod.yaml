@@ -46,4 +46,4 @@ steps:
 
   - id: "Pushing image"
     name: "gcr.io/cloud-builders/docker"
-    args: ["build", "gcr.io/$PROJECT_ID/app-laravel:$SHORT_SHA"]
+    args: ["push", "gcr.io/$PROJECT_ID/app-laravel:$SHORT_SHA"]
