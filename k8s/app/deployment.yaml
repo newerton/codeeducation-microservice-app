@@ -18,7 +18,7 @@ spec:
             [
               "/bin/sh",
               "-c",
-              "ln -s /var/www /usr/share/nginx; chmod +x /var/www/k8s/entrypoint.sh; /var/www/k8s/entrypoint.sh; php-fpm;",
+              "ln -s /var/www /usr/share/nginx; /var/www/k8s/entrypoint.sh; php-fpm;",
             ]
           ports:
             - containerPort: 3306
