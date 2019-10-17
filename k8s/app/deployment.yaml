@@ -15,7 +15,11 @@ spec:
         - image: img-app-deployment
           name: app
           command:
-            ["/bin/sh", "-c", "ln -s /var/www /usr/share/nginx; php-fpm;"]
+            [
+              "/bin/sh",
+              "-c",
+              "ln -s /var/www /usr/share/nginx; /var/www/k8s/entrypoint.sh; php-fpm;",
+            ]
           ports:
             - containerPort: 3306
           env:
