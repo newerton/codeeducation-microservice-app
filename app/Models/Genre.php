@@ -6,7 +6,7 @@ use App\Models\Traits\Uuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Gender extends Model
+class Genre extends Model
 {
     use Uuid;
     use SoftDeletes;
@@ -16,4 +16,5 @@ class Gender extends Model
     protected $casts = [
         'id' => 'string'
     ];
+    public $incrementing = false;
 }

@@ -5,9 +5,11 @@
 /storage/*.key
 /vendor
 /.docker/mysql/dbdata/*
-.idea
+.idea/
+.vscode/
 .env
 .env.backup
+.env.testing
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml

@@ -1,15 +1,16 @@
-version: "3.7"
+version: "3"
 
 services:
   app:
     build: .
-    container_name: app
-    entrypoint: dockerize -template ./.docker/app/.env:.env -wait tcp://db:3306 -timeout 40s ./.docker/entrypoint.sh
+    container_name: micro-videos-app
+    entrypoint: dockerize -template ./.docker/app/.env:.env -template ./.docker/app/.env.testing:.env.testing -wait tcp://db:3306 -timeout 40s ./.docker/entrypoint.sh
     environment:
-      - DB_HOST=db
-      - DB_DATABASE=laravel
-      - DB_USERNAME=root
-      - DB_PASSWORD=root
+      - _DB_HOST=db
+      - _DB_DATABASE=laravel
+      - _DB_USERNAME=root
+      - _DB_PASSWORD=root
+      - _TEST_DB_DATABASE=laravel_test
     volumes:
       - .:/var/www
     networks:
@@ -20,7 +21,7 @@ services:
 
   nginx:
     build: ./.docker/nginx
-    container_name: nginx
+    container_name: micro-videos-nginx
     entrypoint: dockerize -template /etc/nginx/conf.d/nginx.conf:/etc/nginx/conf.d/nginx.conf nginx -g "daemon off;"
     restart: always
     tty: true
@@ -39,15 +40,15 @@ services:
   db:
     image: mysql:5.7
     command: --innodb_use_native_aio=0
-    container_name: db
+    container_name: micro-videos-db
     restart: always
     tty: true
     ports:
       - "3306:3306"
     volumes:
       - ./.docker/mysql/dbdata:/var/lib/mysql
+      - ./.docker/mysql/init:/docker-entrypoint-initdb.d
     environment:
-      - MYSQL_DATABASE=laravel
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_USER=root
     networks:
@@ -55,7 +56,7 @@ services:
 
   redis:
     image: redis:alpine
-    container_name: redis
+    container_name: micro-videos-redis
     expose:
       - 6379
     networks:
