@@ -4,8 +4,7 @@ namespace Tests\Feature\Models;
 
 use App\Models\Category;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Ramsey\Uuid\Uuid;
 use Tests\TestCase;
 
 class CategoryTest extends TestCase
@@ -66,6 +65,14 @@ class CategoryTest extends TestCase
             'is_active' => true,
         ]);
         $this->assertTrue($category->is_active);
+
+        $category = Category::create([
+            'name' => 'test',
+            'is_active' => true,
+        ]);
+
+        $uuidV4 = Uuid::isValid($category->id);
+        $this->assertTrue($uuidV4);
     }
 
     public function testUpdate()
@@ -84,5 +91,17 @@ class CategoryTest extends TestCase
         foreach ($data as $key => $value) {
             $this->assertEquals($value, $category->{$key});
         }
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function testDelete()
+    {
+        /** @var Category $category */
+        $category = factory(Category::class)->create();
+        $category->delete();
+
+        $this->assertSoftDeleted($category->getTable(), ['id' => $category->id]);
     }
 }
