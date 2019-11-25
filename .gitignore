@@ -8,6 +8,7 @@
 .idea/
 .vscode/
 .env
+!/.docker/app/.env
 .env.backup
 .env.testing
 .phpunit.result.cache
