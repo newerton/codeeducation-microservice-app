@@ -1,7 +1,7 @@
 steps:
   - id: "Rodando docker-compose"
     name: "gcr.io/$PROJECT_ID/docker-compose"
-    args: ["-f", "docker-compose.cloudbuild.yaml", "up", "-d"]
+    args: ["-f", "docker-compose.prod.yaml", "up", "-d"]
 
   - id: "Rodando composer"
     name: "gcr.io/cloud-builders/docker"
@@ -10,6 +10,10 @@ steps:
   - id: "Copiando .env"
     name: "gcr.io/cloud-builders/docker"
     args: ["exec", "-t", "app", "cp", ".env.example", ".env"]
+
+  - id: "Copiando .env.testing"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["exec", "-t", "app", "cp", ".env.testing.example", ".env.testing"]
 
   - id: "Rodando artisan key:generate"
     name: "gcr.io/cloud-builders/docker"

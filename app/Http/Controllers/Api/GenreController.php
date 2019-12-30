@@ -13,22 +13,44 @@ class GenreController extends Controller
         'is_active' => 'boolean',
     ];
 
-    public function index()
+    /**
+     * @param Request $request
+     * @return Genre[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function index(Request $request)
     {
         return Genre::all();
     }
 
+    /**
+     * @param Request $request
+     * @return mixed
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function store(Request $request)
     {
+        /** @var Genre $genre */
         $this->validate($request, $this->rules);
-        return Genre::create($request->all());
+        $genre = Genre::create($request->all());
+        $genre->refresh();
+        return $genre;
     }
 
+    /**
+     * @param Genre $genre
+     * @return Genre
+     */
     public function show(Genre $genre)
     {
         return $genre;
     }
 
+    /**
+     * @param Request $request
+     * @param Genre $genre
+     * @return Genre
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function update(Request $request, Genre $genre)
     {
         $this->validate($request, $this->rules);
@@ -36,6 +58,11 @@ class GenreController extends Controller
         return $genre;
     }
 
+    /**
+     * @param Genre $genre
+     * @return \Illuminate\Http\Response
+     * @throws \Exception
+     */
     public function destroy(Genre $genre)
     {
         $genre->delete();
