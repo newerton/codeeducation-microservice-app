@@ -13,6 +13,10 @@ class CategoryController extends Controller
         'is_active' => 'boolean',
     ];
 
+    /**
+     * @param Request $request
+     * @return Category[]|\Illuminate\Database\Eloquent\Collection
+     */
     public function index(Request $request)
     {
         return Category::all();
