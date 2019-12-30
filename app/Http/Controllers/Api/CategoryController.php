@@ -18,17 +18,35 @@ class CategoryController extends Controller
         return Category::all();
     }
 
+    /**
+     * @param Request $request
+     * @return mixed
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function store(Request $request)
     {
+        /** @var Category $category */
         $this->validate($request, $this->rules);
-        return Category::create($request->all());
+        $category = Category::create($request->all());
+        $category->refresh();
+        return $category;
     }
 
+    /**
+     * @param Category $category
+     * @return Category
+     */
     public function show(Category $category)
     {
         return $category;
     }
 
+    /**
+     * @param Request $request
+     * @param Category $category
+     * @return Category
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function update(Request $request, Category $category)
     {
         $this->validate($request, $this->rules);
@@ -36,6 +54,11 @@ class CategoryController extends Controller
         return $category;
     }
 
+    /**
+     * @param Category $category
+     * @return \Illuminate\Http\Response
+     * @throws \Exception
+     */
     public function destroy(Category $category)
     {
         $category->delete();

@@ -4,13 +4,7 @@ services:
   app:
     build: .
     container_name: micro-videos-app
-    entrypoint: dockerize -template ./.docker/app/.env:.env -template ./.docker/app/.env.testing:.env.testing -wait tcp://db:3306 -timeout 40s ./.docker/entrypoint.sh
-    environment:
-      - _DB_HOST=db
-      - _DB_DATABASE=laravel
-      - _DB_USERNAME=root
-      - _DB_PASSWORD=root
-      - _TEST_DB_DATABASE=laravel_test
+    entrypoint: dockerize -wait tcp://db:3306 -timeout 40s ./.docker/entrypoint.sh
     volumes:
       - .:/var/www
     networks:
