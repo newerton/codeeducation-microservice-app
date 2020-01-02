@@ -14,12 +14,34 @@ trait MockController
     protected function assertRollbackStore()
     {
         $controller = $this->mockControllerToHandleRelations("rulesStore");
-        $request = \Mockery::mock(Request::class);
+        $request = $this->mockRequest();
+
+        $hasError = false;
         try {
             $controller->store($request);
         } catch (TestException $exception) {
             $this->assertCount(1, $this->model()::all());
+            $hasError = true;
         }
+        $this->assertTrue($hasError);
+    }
+
+    protected function assertRollbackUpdate($collection)
+    {
+        $controller = $this->mockControllerToHandleRelations("rulesUpdate");
+        $controller->shouldReceive('findOrFail')
+            ->withAnyArgs()
+            ->andReturn($collection);
+        $request = $this->mockRequest();
+        
+        $hasError = false;
+        try {
+            $controller->update($request, $collection->id);
+        } catch (TestException $exception) {
+            $this->assertEquals($collection->refresh()->toArray(), $this->model()::find($collection->id)->toArray());
+            $hasError = true;
+        }
+        $this->assertTrue($hasError);
     }
 
     protected function mockControllerToHandleRelations($rulesToMock)
@@ -39,14 +61,12 @@ trait MockController
         return $controller;
     }
 
-    protected function assertRollbackUpdate($collection)
+    protected function mockRequest()
     {
-        $controller = $this->mockControllerToHandleRelations("rulesUpdate");
         $request = \Mockery::mock(Request::class);
-        try {
-            $controller->update($request, $collection->id);
-        } catch (TestException $exception) {
-            $this->assertEquals($collection->refresh()->toArray(), $this->model()::find($collection->id)->toArray());
-        }
+        $request->shouldReceive('get')
+            ->withAnyArgs()
+            ->andReturnNull();
+        return $request;
     }
 }

@@ -3,13 +3,53 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Genre;
+use Illuminate\Http\Request;
 
 class GenreController extends BasicCrudController
 {
     private $rules = [
         'name' => 'required|max:255',
         'is_active' => 'boolean',
+        'categories_id' => 'required|array|exists:categories,id,deleted_at,NULL'
     ];
+
+    /**
+     * @param Request $request
+     * @return Genre|mixed
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function store(Request $request)
+    {
+        /** @var Genre $obj */
+        $validatedData = $this->validate($request, $this->rulesStore());
+        $self = $this;
+        $obj = \DB::transaction(function () use ($request, $validatedData, $self) {
+            $obj = $this->model()::create($validatedData);
+            $self->handleRelations($obj, $request);
+            return $obj;
+        });
+        $obj->refresh();
+        return $obj;
+    }
+
+    public function update(Request $request, $id)
+    {
+        /** @var Genre $obj */
+        $obj = $this->findOrFail($id);
+        $validatedData = $this->validate($request, $this->rulesUpdate());
+        $self = $this;
+        $obj = \DB::transaction(function () use ($request, $validatedData, $self, $obj) {
+            $obj->update($validatedData);
+            $self->handleRelations($obj, $request);
+            return $obj;
+        });
+        return $obj;
+    }
+
+    protected function handleRelations($video, Request $request)
+    {
+        $video->categories()->sync($request->get('categories_id'));
+    }
 
     protected function model()
     {
