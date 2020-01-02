@@ -72,7 +72,6 @@ class CategoryControllerTest extends TestCase
         ];
         $this->assertInvalidationInStoreAction($data, 'boolean');
         $this->assertInvalidationInUpdateAction($data, 'boolean');
-
     }
 
     /**
@@ -84,10 +83,10 @@ class CategoryControllerTest extends TestCase
             'name' => 'test'
         ];
         $testDatabase = $data + [
-                'description' => null,
-                'is_active' => true,
-                'deleted_at' => null
-            ];
+            'description' => null,
+            'is_active' => true,
+            'deleted_at' => null
+        ];
         $response = $this->assertStore($data, $testDatabase);
         $response->assertJsonStructure([
             'created_at', 'updated_at'
@@ -99,9 +98,9 @@ class CategoryControllerTest extends TestCase
             'is_active' => false,
         ];
         $testDatabase = $data + [
-                'description' => 'description test',
-                'is_active' => false
-            ];
+            'description' => 'description test',
+            'is_active' => false
+        ];
         $this->assertStore($data, $testDatabase);
     }
 
@@ -131,7 +130,6 @@ class CategoryControllerTest extends TestCase
 
         $data['description'] = null;
         $this->assertUpdate($data, array_merge($data, ['description' => null]));
-
     }
 
     public function testDestroy()
@@ -150,6 +148,5 @@ class CategoryControllerTest extends TestCase
             ->assertStatus(204);
         $this->assertNull(Category::find($this->category->id));
         $this->assertNotNull(Category::withTrashed()->find($this->category->id));
-
     }
 }
