@@ -24,7 +24,8 @@ class VideoController extends BasicCrudController
                 'required',
                 'array',
                 'exists:genres,id,deleted_at,NULL'
-            ]
+            ],
+            'video_file' => 'required'
         ];
     }
 
@@ -33,12 +34,7 @@ class VideoController extends BasicCrudController
         $this->addRuleIfGenreHasCategories($request);
         /** @var Video $obj */
         $validatedData = $this->validate($request, $this->rulesStore());
-        $self = $this;
-        $obj = \DB::transaction(function () use ($request, $validatedData, $self) {
-            $obj = $this->model()::create($validatedData);
-            $self->handleRelations($obj, $request);
-            return $obj;
-        });
+        $obj = $this->model()::create($validatedData);
         $obj->refresh();
         return $obj;
     }
@@ -49,12 +45,7 @@ class VideoController extends BasicCrudController
         $obj = $this->findOrFail($id);
         $this->addRuleIfGenreHasCategories($request);
         $validatedData = $this->validate($request, $this->rulesUpdate());
-        $self = $this;
-        $obj = \DB::transaction(function () use ($request, $validatedData, $self, $obj) {
-            $obj->update($validatedData);
-            $self->handleRelations($obj, $request);
-            return $obj;
-        });
+        $obj->update($validatedData);
         return $obj;
     }
 
