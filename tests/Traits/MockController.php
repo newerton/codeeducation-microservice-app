@@ -33,7 +33,7 @@ trait MockController
             ->withAnyArgs()
             ->andReturn($collection);
         $request = $this->mockRequest();
-        
+
         $hasError = false;
         try {
             $controller->update($request, $collection->id);

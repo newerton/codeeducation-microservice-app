@@ -8,17 +8,19 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\UploadedFile;
 use Tests\Stubs\Models\UploadFilesStub;
 use Tests\TestCase;
+use Tests\Traits\TestProduction;
 use Tests\Traits\TestStorages;
 
 class UploadFilesProductionTest extends TestCase
 {
-    use TestStorages;
+    use TestStorages, TestProduction;
 
     private $obj;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->skipTestIfNotProdution();
         $this->obj = new UploadFilesStub();
         \Config::set('filesystems.default', 'gcs');
         $this->deleteAllFiles();

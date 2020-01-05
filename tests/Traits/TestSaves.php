@@ -27,13 +27,18 @@ trait TestSaves
         if ($response->status() !== 201) {
             throw new \Exception("Response status must be 201, given {$response->status()}:\n{$response->content()}");
         }
-
         $this->assertInDatabase($response, $testDatabase);
         $this->assertJsonResponseContent($response, $testDatabase, $testJsonData);
-
         return $response;
     }
 
+    /**
+     * @param array $sendData
+     * @param array $testDatabase
+     * @param array|null $testJsonData
+     * @return TestResponse
+     * @throws \Exception
+     */
     protected function assertUpdate(array $sendData, array $testDatabase, array $testJsonData = null): TestResponse
     {
         /** @var TestResponse $response */
@@ -41,10 +46,8 @@ trait TestSaves
         if ($response->status() !== 200) {
             throw new \Exception("Response status must be 201, given {$response->status()}:\n{$response->content()}");
         }
-
         $this->assertInDatabase($response, $testDatabase);
         $this->assertJsonResponseContent($response, $testDatabase, $testJsonData);
-
         return $response;
     }
 
@@ -63,6 +66,6 @@ trait TestSaves
 
     private function getResponseId(TestResponse $response)
     {
-        return ['id' => $response->json('id')];
+        return ['id' => $response->json('id') ?? $response->json('data.id')];
     }
 }

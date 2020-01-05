@@ -35,56 +35,16 @@ class VideoCrudTest extends BaseVideoTestCase
                 'opened',
                 'rating',
                 'duration',
+                'thumb_file',
+                'banner_file',
+                'trailer_file',
+                'video_file',
                 'deleted_at',
                 'created_at',
                 'updated_at',
             ],
             $categoryKeys
         );
-    }
-
-    public function testCreate()
-    {
-        /** @var Video $category */
-        $category = Video::create([
-            'name' => 'test'
-        ]);
-        $category->refresh();
-        $this->assertEquals('test', $category->name);
-        $this->assertNull($category->description);
-        $this->assertTrue((bool)$category->is_active);
-
-        $category = Video::create([
-            'name' => 'test',
-            'description' => null,
-        ]);
-        $this->assertNull($category->description);
-
-        $category = Video::create([
-            'name' => 'test',
-            'description' => 'test_description',
-        ]);
-        $this->assertEquals('test_description', $category->description);
-
-        $category = Video::create([
-            'name' => 'test',
-            'is_active' => false,
-        ]);
-        $this->assertFalse($category->is_active);
-
-        $category = Video::create([
-            'name' => 'test',
-            'is_active' => true,
-        ]);
-        $this->assertTrue($category->is_active);
-
-        $category = Video::create([
-            'name' => 'test',
-            'is_active' => true,
-        ]);
-
-        $uuidV4 = Uuid::isValid($category->id);
-        $this->assertTrue($uuidV4);
     }
 
     public function testCreateWithBasicFields()
@@ -99,6 +59,9 @@ class VideoCrudTest extends BaseVideoTestCase
         $video = Video::create($this->data + ['opened' => true]);
         $this->assertTrue($video->opened);
         $this->assertDatabaseHas('videos', $this->data + ['opened' => true]);
+
+        $uuidV4 = Uuid::isValid($video->id);
+        $this->assertTrue($uuidV4);
     }
 
     public function testCreateWithRelations()
@@ -111,24 +74,9 @@ class VideoCrudTest extends BaseVideoTestCase
             ]);
         $this->assertHasCategory($video->id, $category->id);
         $this->assertHasGenre($video->id, $genre->id);
-    }
 
-    public function testUpdate()
-    {
-        /** @var Video $category */
-        $category = factory(Video::class)->create([
-            'description' => 'test_description',
-            'is_active' => false,
-        ]);
-        $data = [
-            'name' => 'test_name_updated',
-            'description' => 'test_description_updated',
-            'is_active' => true,
-        ];
-        $category->update($data);
-        foreach ($data as $key => $value) {
-            $this->assertEquals($value, $category->{$key});
-        }
+        $uuidV4 = Uuid::isValid($video->id);
+        $this->assertTrue($uuidV4);
     }
 
     public function testUpdateWithBasicFields()
@@ -173,9 +121,7 @@ class VideoCrudTest extends BaseVideoTestCase
     {
         $hasError = false;
         try {
-            Video::create([
-                $this->data + ['categories_id' => [0, 1, 2]]
-            ]);
+            Video::create($this->data + ['categories_id' => [0, 1, 2]]);
         } catch (QueryException $e) {
             $this->assertCount(0, Video::all());
             $hasError = true;
@@ -187,11 +133,10 @@ class VideoCrudTest extends BaseVideoTestCase
     {
         $video = factory(Video::class)->create();
         $oldTitle = $video->title;
+
         $hasError = false;
         try {
-            $video->update([
-                $this->data + ['categories_id' => [0, 1, 2]]
-            ]);
+            $video->update($this->data + ['categories_id' => [0, 1, 2]]);
         } catch (QueryException $e) {
             $this->assertDatabaseHas('videos', [
                 'title' => $oldTitle,

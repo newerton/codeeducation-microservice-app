@@ -8,8 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model
 {
-    use SoftDeletes;
-    use Uuid;
+    use SoftDeletes, Uuid;
 
     protected $fillable = ['name', 'description', 'is_active'];
     protected $dates = ['deleted_at'];
