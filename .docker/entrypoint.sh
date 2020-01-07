@@ -4,7 +4,7 @@
 ### FRONT-END ###
 npm config set cache /var/www/.npm-cache --global
 yarn config set cache-folder /var/www/.yarn-cache
-cd /var/www/frontend && npm install && cd ..
+cd /var/www/frontend && yarn install && cd ..
 
 ### BACK-END ###
 cd backend
