@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Chip, CircularProgress, Typography } from "@material-ui/core";
+import { Chip } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 import http from "../../../util/http";
 import { format, parseISO } from "date-fns";
@@ -8,6 +8,18 @@ const columnsDefinitions = [
   {
     name: "name",
     label: "Nome"
+  },
+  {
+    name: "categories",
+    label: "Categorias",
+    options: {
+      customBodyRender(value, tableMeta, updateValue) {
+        const mapCategories = value.map(value => value.name);
+        const categories =
+          mapCategories.slice(0, -1).join(", ") + " e " + mapCategories.pop();
+        return categories;
+      }
+    }
   },
   {
     name: "is_active",
@@ -33,39 +45,19 @@ const columnsDefinitions = [
   }
 ];
 
-const options = {
-  textLabels: {
-    body: {
-      noMatch: (
-        <CircularProgress
-          size={24}
-          style={{ marginLeft: 15, position: "relative", top: 4 }}
-        />
-      )
-    }
-  }
-};
-
 export default function Table() {
   const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
-      const response = await http.get("categories");
+      const response = await http.get("genres");
       setData(response.data.data);
-      setIsLoading(false);
     }
 
     loadData();
   }, []);
 
   return (
-    <MUIDataTable
-      title="Categorias"
-      columns={columnsDefinitions}
-      data={data}
-      options={options}
-    />
+    <MUIDataTable title="Gêneros" columns={columnsDefinitions} data={data} />
   );
 }

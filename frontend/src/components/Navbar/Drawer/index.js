@@ -1,24 +1,32 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { SwipeableDrawer, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import routes from './../../../routes'
-import { Link } from 'react-router-dom';
+import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import {
+  SwipeableDrawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText
+} from "@material-ui/core";
+import routes from "./../../../routes";
+import { Link } from "react-router-dom";
 
 // import { Container } from './styles';
 
 const useStyles = makeStyles(theme => ({
   list: {
-    width: 250,
+    width: 250
   },
   fullList: {
-    width: 'auto',
-  },
+    width: "auto"
+  }
 }));
 
 const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
 const listRoutes = [
-  'dashboard',
-  'categories.list'
+  "dashboard",
+  "categories.list",
+  "cast_members.list",
+  "genres.list"
 ];
 const menuRoutes = routes.filter(route => listRoutes.includes(route.name));
 
@@ -41,7 +49,6 @@ export default function Drawer({ open, toggleDrawer }) {
             </ListItem>
           );
         })}
-
       </List>
     </div>
   );
