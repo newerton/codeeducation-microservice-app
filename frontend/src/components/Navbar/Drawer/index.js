@@ -1,32 +1,34 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import React from 'react';
+import { Link } from 'react-router-dom';
+
 import {
   SwipeableDrawer,
   List,
   ListItem,
   ListItemIcon,
-  ListItemText
-} from "@material-ui/core";
-import routes from "./../../../routes";
-import { Link } from "react-router-dom";
+  ListItemText,
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+
+import routes from '../../../routes';
 
 // import { Container } from './styles';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   list: {
-    width: 250
+    width: 250,
   },
   fullList: {
-    width: "auto"
-  }
+    width: 'auto',
+  },
 }));
 
 const iOS = process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent);
 const listRoutes = [
-  "dashboard",
-  "categories.list",
-  "cast_members.list",
-  "genres.list"
+  'dashboard',
+  'categories.list',
+  'cast_members.list',
+  'genres.list',
 ];
 const menuRoutes = routes.filter(route => listRoutes.includes(route.name));
 

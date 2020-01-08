@@ -1,10 +1,12 @@
-import React, { Fragment } from 'react';
+import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
+
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
+
+import Breadcrumbs from './components/Breadcrumbs';
 import Navbar from './components/Navbar';
 import AppRouter from './routes/AppRouter';
-import { BrowserRouter } from 'react-router-dom';
-import Breadcrumbs from './components/Breadcrumbs';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -17,11 +19,11 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function App(props) {
+export default function App() {
   const classes = useStyles();
 
   return (
-    <Fragment>
+    <>
       <BrowserRouter>
         <div className={classes.root}>
           <CssBaseline />
@@ -33,7 +35,6 @@ export default function App(props) {
           </main>
         </div>
       </BrowserRouter>
-    </Fragment>
-
+    </>
   );
 }
