@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { CircularProgress, Button } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 import http from "../../../util/http";
 import { format, parseISO } from "date-fns";
@@ -32,6 +34,30 @@ const columnsDefinitions = [
   }
 ];
 
+const options = {
+  textLabels: {
+    body: {
+      noMatch: (
+        <CircularProgress
+          size={24}
+          style={{ marginLeft: 15, position: "relative", top: 4 }}
+        />
+      )
+    }
+  }
+};
+
+const btnAdd = (
+  <Button
+    variant="outlined"
+    color="primary"
+    component={Link}
+    to="/cast-members/create"
+  >
+    Adicionar
+  </Button>
+);
+
 export default function Table() {
   const [data, setData] = useState([]);
 
@@ -46,9 +72,10 @@ export default function Table() {
 
   return (
     <MUIDataTable
-      title="Membros de elencos"
+      title={btnAdd}
       columns={columnsDefinitions}
       data={data}
+      options={options}
     />
   );
 }

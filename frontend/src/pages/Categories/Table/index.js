@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Chip, CircularProgress, Typography } from "@material-ui/core";
+import { Link } from "react-router-dom";
+import { Chip, CircularProgress, Button } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
-import http from "../../../util/http";
 import { format, parseISO } from "date-fns";
+import categoryHttp from "../../../util/http/category-http";
 
 const columnsDefinitions = [
   {
@@ -46,15 +47,24 @@ const options = {
   }
 };
 
+const btnAdd = (
+  <Button
+    variant="outlined"
+    color="primary"
+    component={Link}
+    to="/categories/create"
+  >
+    Adicionar
+  </Button>
+);
+
 export default function Table() {
   const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
-      const response = await http.get("categories");
+      const response = await categoryHttp.list();
       setData(response.data.data);
-      setIsLoading(false);
     }
 
     loadData();
@@ -62,7 +72,7 @@ export default function Table() {
 
   return (
     <MUIDataTable
-      title="Categorias"
+      title={btnAdd}
       columns={columnsDefinitions}
       data={data}
       options={options}
