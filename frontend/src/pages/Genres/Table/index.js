@@ -1,49 +1,52 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Chip, CircularProgress, Button } from "@material-ui/core";
-import MUIDataTable from "mui-datatables";
-import http from "../../../util/http";
-import { format, parseISO } from "date-fns";
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+
+import { Chip, CircularProgress, Button } from '@material-ui/core';
+import { format, parseISO } from 'date-fns';
+import MUIDataTable from 'mui-datatables';
+
+import http from '~/util/http';
 
 const columnsDefinitions = [
   {
-    name: "name",
-    label: "Nome"
+    name: 'name',
+    label: 'Nome',
   },
   {
-    name: "categories",
-    label: "Categorias",
+    name: 'categories',
+    label: 'Categorias',
     options: {
-      customBodyRender(value, tableMeta, updateValue) {
-        const mapCategories = value.map(value => value.name);
-        const categories =
-          mapCategories.slice(0, -1).join(", ") + " e " + mapCategories.pop();
+      customBodyRender(value) {
+        const mapCategories = value.map(val => val.name);
+        const categories = `${mapCategories
+          .slice(0, -1)
+          .join(', ')} e ${mapCategories.pop()}`;
         return categories;
-      }
-    }
+      },
+    },
   },
   {
-    name: "is_active",
-    label: "Ativo?",
+    name: 'is_active',
+    label: 'Ativo?',
     options: {
-      customBodyRender(value, tableMeta, updateValue) {
+      customBodyRender(value) {
         return value ? (
           <Chip label="Sim" color="primary" />
         ) : (
           <Chip label="Não" color="secondary" />
         );
-      }
-    }
+      },
+    },
   },
   {
-    name: "created_at",
-    label: "Criado em",
+    name: 'created_at',
+    label: 'Criado em',
     options: {
-      customBodyRender(value, tableMeta, updateValue) {
-        return <span>{format(parseISO(value), "dd/MM/yyyy")}</span>;
-      }
-    }
-  }
+      customBodyRender(value) {
+        return <span>{format(parseISO(value), 'dd/MM/yyyy')}</span>;
+      },
+    },
+  },
 ];
 
 const options = {
@@ -52,11 +55,11 @@ const options = {
       noMatch: (
         <CircularProgress
           size={24}
-          style={{ marginLeft: 15, position: "relative", top: 4 }}
+          style={{ marginLeft: 15, position: 'relative', top: 4 }}
         />
-      )
-    }
-  }
+      ),
+    },
+  },
 };
 
 const btnAdd = (
@@ -75,7 +78,7 @@ export default function Table() {
 
   useEffect(() => {
     async function loadData() {
-      const response = await http.get("genres");
+      const response = await http.get('genres');
       setData(response.data.data);
     }
 

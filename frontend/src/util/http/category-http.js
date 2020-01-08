@@ -1,5 +1,5 @@
-import HttpResource from "./http-resource";
+import HttpResource from './http-resource';
 
-const categoryHttp = new HttpResource("categories");
+const categoryHttp = new HttpResource('categories');
 
 export default categoryHttp;

@@ -1,72 +1,74 @@
-import React from "react";
-import Dashboard from "../pages/Dashboard";
-import CategoriesList from "../pages/Categories/List";
-import CategoriesForm from "../pages/Categories/Form";
-import CastMembersList from "../pages/CastMembers/List";
-import GenresList from "../pages/Genres/List";
+import React from 'react';
+
 import {
   DashboardRounded,
   CategoryRounded,
-  PersonRounded
-} from "@material-ui/icons";
+  PersonRounded,
+} from '@material-ui/icons';
+
+import CastMembersList from '../pages/CastMembers/List';
+import CategoriesForm from '../pages/Categories/Form';
+import CategoriesList from '../pages/Categories/List';
+import Dashboard from '../pages/Dashboard';
+import GenresList from '../pages/Genres/List';
 
 const routes = [
   {
-    name: "dashboard",
-    label: "Dashboard",
+    name: 'dashboard',
+    label: 'Dashboard',
     icon: <DashboardRounded />,
-    path: "/",
+    path: '/',
     component: Dashboard,
-    exact: true
+    exact: true,
   },
   {
-    name: "categories.list",
-    label: "Categorias",
+    name: 'categories.list',
+    label: 'Categorias',
     icon: <CategoryRounded />,
-    path: "/categories",
+    path: '/categories',
     component: CategoriesList,
-    exact: true
+    exact: true,
   },
   {
-    name: "categories.create",
-    label: "Adicionar categorias",
+    name: 'categories.create',
+    label: 'Adicionar categorias',
     icon: <CategoryRounded />,
-    path: "/categories/create",
+    path: '/categories/create',
     component: CategoriesForm,
-    exact: true
+    exact: true,
   },
   {
-    name: "cast_members.list",
-    label: "Membros de elencos",
+    name: 'cast_members.list',
+    label: 'Membros de elencos',
     icon: <PersonRounded />,
-    path: "/cast-members",
+    path: '/cast-members',
     component: CastMembersList,
-    exact: true
+    exact: true,
   },
   {
-    name: "cast_members.create",
-    label: "Adicionar Membros de elencos",
+    name: 'cast_members.create',
+    label: 'Adicionar Membros de elencos',
     icon: <PersonRounded />,
-    path: "/cast-members/create",
+    path: '/cast-members/create',
     component: CastMembersList,
-    exact: true
+    exact: true,
   },
   {
-    name: "genres.list",
-    label: "Gêneros",
+    name: 'genres.list',
+    label: 'Gêneros',
     icon: <CategoryRounded />,
-    path: "/genres",
+    path: '/genres',
     component: GenresList,
-    exact: true
+    exact: true,
   },
   {
-    name: "genres.create",
-    label: "Adicionar Gêneros",
+    name: 'genres.create',
+    label: 'Adicionar Gêneros',
     icon: <CategoryRounded />,
-    path: "/genres/create",
+    path: '/genres/create',
     component: GenresList,
-    exact: true
-  }
+    exact: true,
+  },
 ];
 
 export default routes;

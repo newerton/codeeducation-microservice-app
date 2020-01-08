@@ -1,37 +1,39 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Chip, CircularProgress, Button } from "@material-ui/core";
-import MUIDataTable from "mui-datatables";
-import { format, parseISO } from "date-fns";
-import categoryHttp from "../../../util/http/category-http";
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+
+import { Chip, CircularProgress, Button } from '@material-ui/core';
+import { format, parseISO } from 'date-fns';
+import MUIDataTable from 'mui-datatables';
+
+import categoryHttp from '../../../util/http/category-http';
 
 const columnsDefinitions = [
   {
-    name: "name",
-    label: "Nome"
+    name: 'name',
+    label: 'Nome',
   },
   {
-    name: "is_active",
-    label: "Ativo?",
+    name: 'is_active',
+    label: 'Ativo?',
     options: {
-      customBodyRender(value, tableMeta, updateValue) {
+      customBodyRender(value) {
         return value ? (
           <Chip label="Sim" color="primary" />
         ) : (
           <Chip label="Não" color="secondary" />
         );
-      }
-    }
+      },
+    },
   },
   {
-    name: "created_at",
-    label: "Criado em",
+    name: 'created_at',
+    label: 'Criado em',
     options: {
-      customBodyRender(value, tableMeta, updateValue) {
-        return <span>{format(parseISO(value), "dd/MM/yyyy")}</span>;
-      }
-    }
-  }
+      customBodyRender(value) {
+        return <span>{format(parseISO(value), 'dd/MM/yyyy')}</span>;
+      },
+    },
+  },
 ];
 
 const options = {
@@ -40,11 +42,11 @@ const options = {
       noMatch: (
         <CircularProgress
           size={24}
-          style={{ marginLeft: 15, position: "relative", top: 4 }}
+          style={{ marginLeft: 15, position: 'relative', top: 4 }}
         />
-      )
-    }
-  }
+      ),
+    },
+  },
 };
 
 const btnAdd = (
