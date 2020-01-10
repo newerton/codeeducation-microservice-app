@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
@@ -7,6 +8,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Breadcrumbs from './components/Breadcrumbs';
 import Navbar from './components/Navbar';
 import AppRouter from './routes/AppRouter';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,6 +37,7 @@ export default function App() {
             <AppRouter />
           </main>
         </div>
+        <ToastContainer autoClose={3000} />
       </BrowserRouter>
     </>
   );
