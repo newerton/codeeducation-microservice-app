@@ -1,14 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
+import { toast } from 'react-toastify';
 
-import {
-  TextField,
-  Button,
-  Switch,
-  makeStyles,
-  FormControlLabel,
-} from '@material-ui/core';
-import { Form as Formm, Input } from '@rocketseat/unform';
-// import { Container } from './styles';
+import { Button, makeStyles } from '@material-ui/core';
+import { Form as UnForm } from '@rocketseat/unform';
+import * as Yup from 'yup';
+
+import InputButton from '~/components/InputButton';
+import SwitchButton from '~/components/SwitchButton';
+import categoryHttp from '~/util/http/category-http';
 
 const useStyles = makeStyles(theme => {
   return {
@@ -18,66 +17,53 @@ const useStyles = makeStyles(theme => {
   };
 });
 
+const schema = Yup.object().shape({
+  name: Yup.string().required('O nome da categoria é obrigatório'),
+  description: Yup.string().required('A descrição é obrigatório'),
+});
+
 export default function Form() {
   const classes = useStyles();
-  const inputRef = useRef(false);
   const buttonProps = {
     className: classes.submit,
     variant: 'outlined',
   };
-  const [isActive, setIsActive] = useState();
 
-  function handleSubmit(data) {
-    console.log(data);
+  function handleSubmit(data, { resetForm }) {
+    categoryHttp
+      .create(data)
+      .then(() => {
+        toast.success('Categoria cadastrada com sucesso!');
+        resetForm();
+      })
+      .catch(err => {
+        const { errors } = err.response.data;
+        if (errors) {
+          const firstObj = Object.keys(errors)[0];
+          toast.error(errors[firstObj][0]);
+        }
+      });
   }
 
-  const handleIsActive = name => event => {
-    setIsActive(!isActive);
-  };
   return (
     <>
       <h1>Adicionar uma nova categoria</h1>
-      <Formm onSubmit={handleSubmit}>
-        <TextField
-          label="Título"
-          id="title"
-          name="title"
-          variant="outlined"
-          InputProps={{
-            inputComponent: Input,
-            inputProps: { inputRef: { ref: node => console.log('1', node) } },
-          }}
-          fullWidth
-        />
-        <TextField
+      <UnForm schema={schema} onSubmit={handleSubmit}>
+        <InputButton label="Título" name="name" />
+        <InputButton
           label="Descrição"
-          id="description"
           name="description"
-          multiline
-          fullWidth
-          rows="4"
-          variant="outlined"
+          rows="6"
           margin="normal"
+          multiline
         />
-        <FormControlLabel
-          control={
-            <Switch
-              checked={isActive}
-              onChange={handleIsActive('is_active')}
-              color="primary"
-              id="is_active"
-              name="is_active"
-            />
-          }
-          label="Ativo"
-        />
+        <SwitchButton name="is_active" label="Ativo?" value={false} />
         <div>
-          <Button {...buttonProps}>Salvar</Button>
           <Button {...buttonProps} type="submit">
-            Salvar e continuar editando
+            Salvar
           </Button>
         </div>
-      </Formm>
+      </UnForm>
     </>
   );
 }
