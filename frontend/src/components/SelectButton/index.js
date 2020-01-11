@@ -1,19 +1,34 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { useField } from '@rocketseat/unform';
 import PropTypes from 'prop-types';
 
-export default function SelectButton({ name, label, list, multiple }) {
+const useStyles = makeStyles(() => ({
+  selectError: {
+    color: '#f44336',
+    margin: '8px 14px 0',
+    fontSize: '0.75rem',
+  },
+}));
+
+export default function SelectButton({
+  name,
+  label,
+  list,
+  multiple,
+  isLoading,
+}) {
+  const classes = useStyles();
   const ref = useRef();
   const labelRef = useRef(0);
   const [labelWidth, setLabelWidth] = useState(0);
   const { fieldName, registerField, defaultValue, error } = useField(name);
+  const [values, setValues] = useState(defaultValue);
 
-  const initialValue = multiple ? [] : '';
-  const [values, setValues] = useState(initialValue);
-
-  const parseValue = inputRef => inputRef.dataset.value.split(',');
+  const parseValue = inputRef =>
+    inputRef.dataset.value ? inputRef.dataset.value.split(',') : [];
   const handleChange = () => setValues(values);
   const handleChangeMultiple = event => {
     const { value } = event.target;
@@ -38,10 +53,21 @@ export default function SelectButton({ name, label, list, multiple }) {
     setLabelWidth(labelRef.current.offsetWidth);
   }, []);
 
+  useEffect(() => {
+    if (defaultValue) setValues(defaultValue);
+  }, [fieldName, defaultValue]);
+
   return (
     <>
-      <FormControl margin="normal" variant="outlined" fullWidth>
-        <InputLabel ref={labelRef} id={`${fieldName}-select`}>{label}</InputLabel>
+      <FormControl
+        margin="normal"
+        variant="outlined"
+        error={error && true}
+        fullWidth
+      >
+        <InputLabel ref={labelRef} id={`${fieldName}-select`}>
+          {label}
+        </InputLabel>
         <Select
           multiple={multiple}
           labelId={`${fieldName}-select`}
@@ -51,17 +77,20 @@ export default function SelectButton({ name, label, list, multiple }) {
           onChange={multiple ? handleChangeMultiple : handleChange}
           labelWidth={labelWidth}
           ref={ref}
+          disabled={isLoading}
         >
-          <MenuItem disabled>
-            <em>Selecione categorias</em>
-          </MenuItem>
           {list &&
-          list.map(item => (
-            <MenuItem value={item.id} key={item.id}>
-              {item.name}
-            </MenuItem>
-          ))}
+            list.map(item => (
+              <MenuItem value={item.id} key={item.id}>
+                {item.name}
+              </MenuItem>
+            ))}
         </Select>
+        {error && (
+          <p className={classes.selectError} id="name-helper-text">
+            {error}
+          </p>
+        )}
       </FormControl>
     </>
   );
@@ -72,8 +101,10 @@ SelectButton.propTypes = {
   label: PropTypes.string.isRequired,
   list: PropTypes.array.isRequired,
   multiple: PropTypes.bool,
+  isLoading: PropTypes.bool,
 };
 
 SelectButton.defaultProps = {
   multiple: false,
+  isLoading: false,
 };
