@@ -40,7 +40,6 @@ export default function Form() {
       const response = await categoryHttp.list();
       setCategories(response.data.data);
     }
-
     loadCategories();
   }, []);
 
@@ -48,7 +47,7 @@ export default function Form() {
     genreHttp
       .create(data)
       .then(() => {
-        toast.success('Categoria cadastrada com sucesso!');
+        toast.success('Gênero cadastrado com sucesso!');
         if (formType === 'save') {
           history.push('/genres');
         }
@@ -90,7 +89,7 @@ export default function Form() {
             type="submit"
             onClick={() => setFormType('save-and-new')}
           >
-            Salvar e adicionar uma nova categoria
+            Salvar e adicionar um novo gênero
           </Button>
           <Button
             {...buttonProps}
