@@ -1,14 +1,16 @@
-import React, {useState} from 'react';
-import {toast} from 'react-toastify';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
-import {Button, makeStyles} from '@material-ui/core';
-import {Form as UnForm} from '@rocketseat/unform';
+import { Button, makeStyles } from '@material-ui/core';
+import { Form as UnForm } from '@rocketseat/unform';
 import * as Yup from 'yup';
 
 import InputButton from '~/components/InputButton';
+import SelectButton from '~/components/SelectButton';
 import SwitchButton from '~/components/SwitchButton';
 import history from '~/util/history';
 import categoryHttp from '~/util/http/category-http';
+import genreHttp from '~/util/http/genre-http';
 
 const useStyles = makeStyles(theme => {
   return {
@@ -20,27 +22,37 @@ const useStyles = makeStyles(theme => {
 
 const schema = Yup.object().shape({
   name: Yup.string().required('O nome é obrigatório'),
-  description: Yup.string().required('A descrição é obrigatório'),
+  categories_id: Yup.array().required('A categoria é obrigatório'),
   is_active: Yup.bool(),
 });
 
 export default function Form() {
   const classes = useStyles();
   const [formType, setFormType] = useState('save');
+  const [categories, setCategories] = useState([]);
   const buttonProps = {
     className: classes.submit,
     variant: 'outlined',
   };
 
+  useEffect(() => {
+    async function loadCategories() {
+      const response = await categoryHttp.list();
+      setCategories(response.data.data);
+    }
+
+    loadCategories();
+  }, []);
+
   function handleSubmit(data, { resetForm }) {
-    categoryHttp
+    genreHttp
       .create(data)
       .then(() => {
         toast.success('Categoria cadastrada com sucesso!');
         if (formType === 'save') {
-          history.push('/categories');
+          history.push('/genres');
         }
-        if(formType === 'save-and-new'){
+        if (formType === 'save-and-new') {
           resetForm();
         }
       })
@@ -55,17 +67,16 @@ export default function Form() {
 
   return (
     <>
-      <h1>Adicionar uma nova categoria</h1>
+      <h1>Adicionar um novo gênero</h1>
       <UnForm schema={schema} onSubmit={handleSubmit}>
-        <InputButton label="Nome" name="name"/>
-        <InputButton
-          label="Descrição"
-          name="description"
-          rows="6"
-          margin="normal"
-          multiline
+        <InputButton label="Nome" name="name" />
+        <SelectButton
+          label="Categorias"
+          list={categories}
+          name="categories_id"
+          multiple
         />
-        <SwitchButton name="is_active" label="Ativo?" value={false}/>
+        <SwitchButton name="is_active" label="Ativo?" value={false} />
         <div>
           <Button
             {...buttonProps}

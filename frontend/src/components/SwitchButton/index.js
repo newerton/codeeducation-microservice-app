@@ -10,14 +10,13 @@ export default function SwitchButton({ name, label, value }) {
   const [checked, setChecked] = useState(value);
 
   const handleChange = () => setChecked(!checked);
-  const parseValue = switchRef => Boolean(switchRef.value === 'true');
+  // const parseValue = switchRef => Boolean(switchRef.value === 'true');
 
   useEffect(() => {
     registerField({
       name: fieldName,
       ref: ref.current,
       path: 'value',
-      parseValue,
     });
   }, [ref.current, fieldName]); // eslint-disable-line
 
