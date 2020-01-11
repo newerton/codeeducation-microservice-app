@@ -7,10 +7,12 @@ import {
 } from '@material-ui/icons';
 
 import CastMembersList from '../pages/CastMembers/List';
+import CastMembersForm from '../pages/CastMembers/Form';
 import CategoriesForm from '../pages/Categories/Form';
 import CategoriesList from '../pages/Categories/List';
 import Dashboard from '../pages/Dashboard';
 import GenresList from '../pages/Genres/List';
+import GenresForm from '../pages/Genres/Form';
 
 const routes = [
   {
@@ -47,10 +49,10 @@ const routes = [
   },
   {
     name: 'cast_members.create',
-    label: 'Adicionar Membros de elencos',
+    label: 'Adicionar membros de elencos',
     icon: <PersonRounded />,
     path: '/cast-members/create',
-    component: CastMembersList,
+    component: CastMembersForm,
     exact: true,
   },
   {
@@ -63,10 +65,10 @@ const routes = [
   },
   {
     name: 'genres.create',
-    label: 'Adicionar Gêneros',
+    label: 'Adicionar gêneros',
     icon: <CategoryRounded />,
     path: '/genres/create',
-    component: GenresList,
+    component: GenresForm,
     exact: true,
   },
 ];

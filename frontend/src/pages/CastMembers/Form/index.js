@@ -1,14 +1,14 @@
-import React, {useState} from 'react';
-import {toast} from 'react-toastify';
+import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 
-import {Button, makeStyles} from '@material-ui/core';
-import {Form as UnForm} from '@rocketseat/unform';
+import { Button, makeStyles } from '@material-ui/core';
+import { Form as UnForm } from '@rocketseat/unform';
 import * as Yup from 'yup';
 
 import InputButton from '~/components/InputButton';
-import SwitchButton from '~/components/SwitchButton';
+import RadioButton from '~/components/RadioButton';
 import history from '~/util/history';
-import categoryHttp from '~/util/http/category-http';
+import castMemberHttp from '~/util/http/castMember-http';
 
 const useStyles = makeStyles(theme => {
   return {
@@ -20,9 +20,13 @@ const useStyles = makeStyles(theme => {
 
 const schema = Yup.object().shape({
   name: Yup.string().required('O nome é obrigatório'),
-  description: Yup.string().required('A descrição é obrigatório'),
-  is_active: Yup.bool(),
+  type: Yup.string().required('O tipo é obrigatório'),
 });
+
+const CastMembersTypeMap = {
+  1: 'Diretor',
+  2: 'Autor',
+};
 
 export default function Form() {
   const classes = useStyles();
@@ -33,14 +37,14 @@ export default function Form() {
   };
 
   function handleSubmit(data, { resetForm }) {
-    categoryHttp
+    castMemberHttp
       .create(data)
       .then(() => {
-        toast.success('Categoria cadastrada com sucesso!');
+        toast.success('Membro de elenco cadastrado com sucesso!');
         if (formType === 'save') {
-          history.push('/categories');
+          history.push('/cast-members');
         }
-        if(formType === 'save-and-new'){
+        if (formType === 'save-and-new') {
           resetForm();
         }
       })
@@ -55,17 +59,10 @@ export default function Form() {
 
   return (
     <>
-      <h1>Adicionar uma nova categoria</h1>
+      <h1>Adicionar um novo membro de elenco</h1>
       <UnForm schema={schema} onSubmit={handleSubmit}>
-        <InputButton label="Nome" name="name"/>
-        <InputButton
-          label="Descrição"
-          name="description"
-          rows="6"
-          margin="normal"
-          multiline
-        />
-        <SwitchButton name="is_active" label="Ativo?" value={false}/>
+        <InputButton label="Nome" name="name" />
+        <RadioButton label="Tipo" name="type" list={CastMembersTypeMap} />
         <div>
           <Button
             {...buttonProps}
@@ -79,7 +76,7 @@ export default function Form() {
             type="submit"
             onClick={() => setFormType('save-and-new')}
           >
-            Salvar e adicionar uma nova categoria
+            Salvar e adicionar um novo membro de elenco
           </Button>
           <Button
             {...buttonProps}
