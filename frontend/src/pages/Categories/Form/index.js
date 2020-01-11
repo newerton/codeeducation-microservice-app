@@ -1,22 +1,15 @@
-import React, {useState} from 'react';
-import {toast} from 'react-toastify';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
+import { toast } from 'react-toastify';
 
-import {Button, makeStyles} from '@material-ui/core';
-import {Form as UnForm} from '@rocketseat/unform';
+import { Form as UnForm } from '@rocketseat/unform';
 import * as Yup from 'yup';
 
+import FormButtons from '~/components/FormButtons';
 import InputButton from '~/components/InputButton';
 import SwitchButton from '~/components/SwitchButton';
 import history from '~/util/history';
 import categoryHttp from '~/util/http/category-http';
-
-const useStyles = makeStyles(theme => {
-  return {
-    submit: {
-      margin: theme.spacing(1),
-    },
-  };
-});
 
 const schema = Yup.object().shape({
   name: Yup.string().required('O nome é obrigatório'),
@@ -25,23 +18,57 @@ const schema = Yup.object().shape({
 });
 
 export default function Form() {
-  const classes = useStyles();
-  const [formType, setFormType] = useState('save');
-  const buttonProps = {
-    className: classes.submit,
-    variant: 'outlined',
-  };
+  const { id } = useParams();
+  const [category, setCategory] = useState({
+    name: '',
+    description: '',
+    is_active: false,
+  });
 
-  function handleSubmit(data, { resetForm }) {
-    categoryHttp
-      .create(data)
-      .then(() => {
-        toast.success('Categoria cadastrada com sucesso!');
+  const [formType, setFormType] = useState('save');
+  const [isLoading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+
+    async function loadCategory() {
+      const response = await categoryHttp.get(id);
+      setCategory(response.data.data);
+      setLoading(false);
+    }
+
+    loadCategory();
+  }, [id]);
+
+  function handleSubmit(data) {
+    setLoading(true);
+    const http = !id
+      ? categoryHttp.create(data)
+      : categoryHttp.update(id, data);
+
+    http
+      .then(response => {
+        setLoading(false);
+        toast.success(
+          `Categoria ${id ? 'editada' : 'cadastrada'} com sucesso!`
+        );
         if (formType === 'save') {
           history.push('/categories');
         }
-        if(formType === 'save-and-new'){
-          resetForm();
+        if (formType === 'save-and-new') {
+          history.push('/categories/create');
+        }
+        if (formType === 'save-and-edit') {
+          const categoryId = response.data.data.id;
+          const urlRedirect = `/categories/${categoryId}/edit`;
+          if (id) {
+            history.replace(urlRedirect);
+          } else {
+            history.push(urlRedirect);
+          }
         }
       })
       .catch(err => {
@@ -50,45 +77,25 @@ export default function Form() {
           const firstObj = Object.keys(errors)[0];
           toast.error(errors[firstObj][0]);
         }
+        setLoading(false);
       });
   }
 
   return (
     <>
-      <h1>Adicionar uma nova categoria</h1>
-      <UnForm schema={schema} onSubmit={handleSubmit}>
-        <InputButton label="Nome" name="name"/>
+      <h1>{!id ? 'Adicionar uma nova' : 'Editar'} categoria</h1>
+      <UnForm schema={schema} onSubmit={handleSubmit} initialData={category}>
+        <InputButton label="Nome" name="name" isLoading={isLoading} />
         <InputButton
           label="Descrição"
           name="description"
           rows="6"
           margin="normal"
           multiline
+          isLoading={isLoading}
         />
-        <SwitchButton name="is_active" label="Ativo?" value={false}/>
-        <div>
-          <Button
-            {...buttonProps}
-            type="submit"
-            onClick={() => setFormType('save')}
-          >
-            Salvar
-          </Button>
-          <Button
-            {...buttonProps}
-            type="submit"
-            onClick={() => setFormType('save-and-new')}
-          >
-            Salvar e adicionar uma nova categoria
-          </Button>
-          <Button
-            {...buttonProps}
-            type="submit"
-            onClick={() => setFormType('save-and-edit')}
-          >
-            Salvar e continuar editando
-          </Button>
-        </div>
+        <SwitchButton name="is_active" label="Ativo?" isLoading={isLoading} />
+        <FormButtons setFormType={setFormType} isLoading={isLoading} />
       </UnForm>
     </>
   );

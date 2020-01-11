@@ -13,13 +13,19 @@ import routes from '../../routes';
 const breadcrumbNameMap = {};
 routes.forEach(route => (breadcrumbNameMap[route.path] = route.label));
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
   },
   linkRouter: {
-    color: '#4db5ab',
+    color: theme.palette.secondary.main,
+    '&:focus, &:active': {
+      color: theme.palette.secondary.main,
+    },
+    '&:hover': {
+      color: theme.palette.secondary.dark,
+    },
   },
 }));
 
@@ -64,6 +70,7 @@ export default function Breadcrumbs() {
       </BreadcrumbsUi>
     );
   }
+
   return (
     <div className={classes.root}>
       <Route>{({ location }) => makeBreadcrumb(location)}</Route>

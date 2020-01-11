@@ -19,13 +19,11 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function RadioButton({ name, label, list }) {
+export default function RadioButton({ name, label, list, isLoading }) {
   const classes = useStyles();
-  const ref = useRef();
-  const { fieldName, registerField, error } = useField(name);
-  const [values, setValues] = useState('');
-
-  const handleChange = event => setValues(event.target.value);
+  const ref = useRef(null);
+  const { fieldName, registerField, defaultValue, error } = useField(name);
+  const [values, setValues] = useState(defaultValue);
 
   useEffect(() => {
     registerField({
@@ -34,6 +32,10 @@ export default function RadioButton({ name, label, list }) {
       path: 'dataset.value',
     });
   }, [ref.current, fieldName]); // eslint-disable-line
+
+  useEffect(() => {
+    if (defaultValue) setValues(defaultValue.toString());
+  }, [fieldName, defaultValue]);
 
   return (
     <>
@@ -45,7 +47,7 @@ export default function RadioButton({ name, label, list }) {
           name={fieldName}
           value={values}
           data-value={values}
-          onChange={handleChange}
+          onChange={e => setValues(e.target.value)}
           ref={ref}
         >
           {list &&
@@ -55,6 +57,7 @@ export default function RadioButton({ name, label, list }) {
                 value={key}
                 control={<Radio />}
                 label={list[key]}
+                disabled={isLoading}
               />
             ))}
         </RadioGroup>
@@ -72,4 +75,9 @@ RadioButton.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   list: PropTypes.shape({}).isRequired,
+  isLoading: PropTypes.bool,
+};
+
+RadioButton.defaultProps = {
+  isLoading: false,
 };

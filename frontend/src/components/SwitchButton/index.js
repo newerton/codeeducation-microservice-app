@@ -4,21 +4,22 @@ import { Switch, FormControlLabel } from '@material-ui/core';
 import { useField } from '@rocketseat/unform';
 import PropTypes from 'prop-types';
 
-export default function SwitchButton({ name, label, value }) {
+export default function SwitchButton({ name, label, isLoading }) {
   const ref = useRef(null);
-  const { fieldName, registerField, error } = useField(name);
-  const [checked, setChecked] = useState(value);
-
-  const handleChange = () => setChecked(!checked);
-  // const parseValue = switchRef => Boolean(switchRef.value === 'true');
+  const { fieldName, registerField, defaultValue, error } = useField(name);
+  const [values, setValues] = useState(defaultValue);
 
   useEffect(() => {
     registerField({
       name: fieldName,
       ref: ref.current,
-      path: 'value',
+      path: 'dataset.value',
     });
   }, [ref.current, fieldName]); // eslint-disable-line
+
+  useEffect(() => {
+    if (defaultValue) setValues(defaultValue);
+  }, [fieldName, defaultValue]);
 
   return (
     <>
@@ -27,13 +28,14 @@ export default function SwitchButton({ name, label, value }) {
           <Switch
             id={fieldName}
             name={fieldName}
-            checked={checked}
-            onChange={handleChange}
+            onChange={e => setValues(e.target.checked)}
             color="primary"
-            value={checked}
+            ref={ref}
+            data-value={values}
+            checked={values}
+            disabled={isLoading}
           />
         }
-        inputRef={ref}
         label={label}
       />
       {error && <span>{error}</span>}
@@ -44,5 +46,9 @@ export default function SwitchButton({ name, label, value }) {
 SwitchButton.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
-  value: PropTypes.bool.isRequired,
+  isLoading: PropTypes.bool,
+};
+
+SwitchButton.defaultProps = {
+  isLoading: false,
 };
