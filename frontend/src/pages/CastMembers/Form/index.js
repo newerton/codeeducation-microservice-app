@@ -37,13 +37,19 @@ export default function Form() {
       return;
     }
 
+    let isSubscribed = true;
     async function loadCastMember() {
       const response = await castMemberHttp.get(id);
-      setCastMember(response.data.data);
-      setLoading(false);
+      if (isSubscribed) {
+        setCastMember(response.data.data);
+        setLoading(false);
+      }
     }
 
     loadCastMember();
+    return () => {
+      isSubscribed = false;
+    };
   }, [id]);
 
   function handleSubmit(data) {

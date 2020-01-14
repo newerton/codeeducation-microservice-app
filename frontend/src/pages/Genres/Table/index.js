@@ -77,12 +77,18 @@ export default function Table() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
+    let isSubscribed = true;
     async function loadData() {
       const response = await http.get('genres');
-      setData(response.data.data);
+      if (isSubscribed) {
+        setData(response.data.data);
+      }
     }
 
     loadData();
+    return () => {
+      isSubscribed = false;
+    };
   }, []);
 
   return (

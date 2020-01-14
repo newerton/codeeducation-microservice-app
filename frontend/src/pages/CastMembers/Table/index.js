@@ -5,7 +5,7 @@ import { CircularProgress, Button } from '@material-ui/core';
 import { format, parseISO } from 'date-fns';
 import MUIDataTable from 'mui-datatables';
 
-import http from '../../../util/http';
+import http from '~/util/http';
 
 const CastMembersTypeMap = {
   1: 'Diretor',
@@ -64,12 +64,18 @@ export default function Table() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
+    let isSubscribed = true;
     async function loadData() {
       const response = await http.get('cast_members');
-      setData(response.data.data);
+      if (isSubscribed) {
+        setData(response.data.data);
+      }
     }
 
     loadData();
+    return () => {
+      isSubscribed = false;
+    };
   }, []);
 
   return (

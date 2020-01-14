@@ -8,7 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import RouteParser from 'route-parser';
 
-import routes from '../../routes';
+import routes from '~/routes';
 
 const breadcrumbNameMap = {};
 routes.forEach(route => (breadcrumbNameMap[route.path] = route.label));

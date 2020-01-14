@@ -10,7 +10,8 @@ import {
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 
-import logo from '../../static/logo.png';
+import logo from '~/static/logo.png';
+
 import Drawer from './Drawer';
 
 // import { Container } from './styles';
