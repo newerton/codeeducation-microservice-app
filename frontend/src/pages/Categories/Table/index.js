@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Chip, CircularProgress, Button } from '@material-ui/core';
+import { Button, Chip } from '@material-ui/core';
 import { format, parseISO } from 'date-fns';
 
 import GridView from '~/components/GridView/';
+import FilterResetButton from '~/components/GridView/FilterResetButton';
+import reducer, { Creators, INITIAL_STATE } from '~/store/filter';
 import categoryHttp from '~/util/http/category-http';
 
 const columnsDefinitions = [
@@ -49,6 +51,9 @@ const columnsDefinitions = [
     name: 'actions',
     label: 'Ações',
     width: '13%',
+    options: {
+      sort: false,
+    },
   },
 ];
 
@@ -67,30 +72,28 @@ export default function Table() {
   const subscribed = useRef(true);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [searchState, setSearchState] = useState({
-    search: '',
-    pagination: {
-      page: 1,
-      total: 0,
-      per_page: 15,
-    },
-    order: {
-      sort: null,
-      dir: null,
-    },
-  });
+  const [filterState, dispatch] = useReducer(reducer, INITIAL_STATE);
+  const [totalRecords, setTotalRecords] = useState(0);
 
   const columns = columnsDefinitions.map(column => {
-    return column.name === searchState.order.sort
+    return column.name === filterState.order.sort
       ? {
           ...column,
           options: {
             ...column.options,
-            sortDirection: searchState.order.dir,
+            sortDirection: filterState.order.dir,
           },
         }
       : column;
   });
+
+  function cleanSearchText(text) {
+    let newText = text;
+    if (text && text.value !== undefined) {
+      newText = text.value;
+    }
+    return newText;
+  }
 
   useEffect(() => {
     subscribed.current = true;
@@ -99,23 +102,17 @@ export default function Table() {
     async function loadData() {
       const { data } = await categoryHttp.list({
         queryParams: {
-          search: searchState.search,
-          page: searchState.pagination.page,
-          per_page: searchState.pagination.per_page,
-          sort: searchState.order.sort,
-          dir: searchState.order.dir,
+          search: cleanSearchText(filterState.search),
+          page: filterState.pagination.page,
+          per_page: filterState.pagination.per_page,
+          sort: filterState.order.sort,
+          dir: filterState.order.dir,
         },
       });
 
       if (subscribed.current) {
         setData(data.data);
-        setSearchState(prevState => ({
-          ...prevState,
-          pagination: {
-            ...prevState.pagination,
-            total: data.meta.total,
-          },
-        }));
+        setTotalRecords(data.meta.total);
         setLoading(false);
       }
     }
@@ -125,18 +122,44 @@ export default function Table() {
       subscribed.current = false;
     };
   }, [
-    searchState.search,
-    searchState.pagination.page,
-    searchState.pagination.per_page,
-    searchState.order,
+    filterState.search,
+    filterState.pagination.page,
+    filterState.pagination.per_page,
+    filterState.order,
   ]);
 
   return (
     <GridView
       title={btnAdd}
-      columns={columnsDefinitions}
+      columns={columns}
       data={data}
       loading={loading}
+      debouncedSearchTime={300}
+      options={{
+        serverSide: true,
+        responsive: 'scrollMaxHeight',
+        searchText: filterState.search,
+        page: filterState.pagination.page - 1,
+        rowsPerPage: filterState.pagination.per_page,
+        count: totalRecords,
+        customToolbar: () => (
+          <FilterResetButton
+            handleClick={() => dispatch(Creators.setReset())}
+          />
+        ),
+        onSearchChange: value =>
+          dispatch(Creators.setSearch({ search: value })),
+        onChangePage: page => dispatch(Creators.setPage({ page: page + 1 })),
+        onChangeRowsPerPage: perPage =>
+          dispatch(Creators.setPerPage({ per_page: perPage })),
+        onColumnSortChange: (changedColumn, direction) =>
+          dispatch(
+            Creators.setOrder({
+              sort: changedColumn,
+              dir: direction.includes('desc') ? 'desc' : 'asc',
+            })
+          ),
+      }}
     />
   );
 }

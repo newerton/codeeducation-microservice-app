@@ -23,6 +23,8 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.3.0",
     "react-toastify": "^5.5.0",
+    "redux": "^4.0.5",
+    "reduxsauce": "^1.1.1",
     "route-parser": "^0.0.5",
     "styled-components": "^4.4.1",
     "yup": "^0.28.0"

@@ -1,15 +1,18 @@
 import React from 'react';
 
 import {
-  useTheme,
-  MuiThemeProvider,
   CircularProgress,
+  MuiThemeProvider,
+  useMediaQuery,
+  useTheme,
 } from '@material-ui/core';
-import { merge, omit, cloneDeep } from 'lodash';
+import { cloneDeep, merge, omit } from 'lodash';
 import MUIDataTable from 'mui-datatables';
 import PropTypes from 'prop-types';
 
-const defaultOptions = {
+import DebouncedTableSearch from './DebouncedTableSearch';
+
+const makeDefaultOptions = debouncedSearchTime => ({
   print: false,
   download: false,
   textLabels: {
@@ -46,10 +49,22 @@ const defaultOptions = {
       deleteAria: 'Excluir registros selecionados',
     },
   },
-};
+  customSearchRender: (searchText, handleSearch, hideSearch, options) => {
+    return (
+      <DebouncedTableSearch
+        searchText={searchText}
+        onSearch={handleSearch}
+        onHide={hideSearch}
+        options={options}
+        debounceTime={debouncedSearchTime}
+      />
+    );
+  },
+});
 
 export default function GridView({ ...props }) {
   const theme = cloneDeep(useTheme());
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
   function setColumnWidth(columns) {
     columns.forEach((column, key) => {
@@ -67,9 +82,15 @@ export default function GridView({ ...props }) {
     setColumnWidth(prop.columns);
     return prop.columns.map(column => omit(column, 'width'));
   }
+
+  const defaultOptions = makeDefaultOptions(props.debouncedSearchTime);
   const newProps = merge({ options: cloneDeep(defaultOptions) }, props, {
     columns: extractMuiDataTableColumns(props),
   });
+
+  function applyResponsive() {
+    newProps.options.responsive = isSmall ? 'scrollMaxHeight' : 'stacked';
+  }
 
   function applyLoading() {
     const { textLabels } = newProps.options;
@@ -89,6 +110,8 @@ export default function GridView({ ...props }) {
   }
 
   applyLoading();
+  applyResponsive();
+
   const originalProps = getOriginalMuiDataTableProps();
   return (
     <MuiThemeProvider theme={theme}>

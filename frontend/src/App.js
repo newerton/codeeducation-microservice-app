@@ -12,13 +12,9 @@ import Navbar from './components/Navbar';
 import AppRouter from './routes/AppRouter';
 import history from './util/history';
 
-
 import 'react-toastify/dist/ReactToastify.css';
 
 const useStyles = makeStyles(muiTheme => ({
-  root: {
-    display: 'flex',
-  },
   toolbar: muiTheme.mixins.toolbar,
   content: {
     flexGrow: 1,
@@ -35,14 +31,12 @@ export default function App() {
         <CssBaseline />
         <BrowserRouter>
           <Router history={history}>
-            <div className={classes.root}>
-              <Navbar />
-              <main className={classes.content}>
-                <div className={classes.toolbar} />
-                <Breadcrumbs />
-                <AppRouter />
-              </main>
-            </div>
+            <Navbar />
+            <main className={classes.content}>
+              <div className={classes.toolbar} />
+              <Breadcrumbs />
+              <AppRouter />
+            </main>
             <ToastContainer autoClose={3000} />
           </Router>
         </BrowserRouter>

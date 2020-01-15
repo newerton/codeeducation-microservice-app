@@ -33,7 +33,7 @@ export default function Form() {
   useEffect(() => {
     let isSubscribed = true;
     async function loadCategories() {
-      const response = await categoryHttp.list();
+      const response = await categoryHttp.list({ queryParams: { all: '' } });
       if (isSubscribed) {
         setCategories(response.data.data);
         setLoading(false);

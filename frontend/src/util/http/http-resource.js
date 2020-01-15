@@ -19,7 +19,7 @@ export default class HttpResource {
     if (options && options.queryParams) {
       config.params = options.queryParams;
     }
-    return http.get(this.resource, options);
+    return http.get(this.resource, config);
   }
 
   async get(id, options = {}) {
@@ -38,7 +38,7 @@ export default class HttpResource {
     return http.delete(`${this.resource}/${id}`);
   }
 
-  isCancelledRequest(err) {
-    return axios.isCancel(err);
+  async isCancelledRequest(error) {
+    return axios.isCancel(error);
   }
 }
