@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Button, Chip } from '@material-ui/core';
@@ -6,7 +6,8 @@ import { format, parseISO } from 'date-fns';
 
 import GridView from '~/components/GridView/';
 import FilterResetButton from '~/components/GridView/FilterResetButton';
-import reducer, { Creators, INITIAL_STATE } from '~/store/filter';
+import useFilter from '~/hooks/useFilter';
+import { Creators } from '~/store/filter';
 import categoryHttp from '~/util/http/category-http';
 
 const columnsDefinitions = [
@@ -68,65 +69,57 @@ const btnAdd = (
   </Button>
 );
 
+const debounceTime = 300;
+const debounceSearchTime = 300;
+const rowsPerPage = 15;
+const rowsPerPageOptions = [15, 30, 60, 120];
+
 export default function Table() {
   const subscribed = useRef(true);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [filterState, dispatch] = useReducer(reducer, INITIAL_STATE);
-  const [totalRecords, setTotalRecords] = useState(0);
-
-  const columns = columnsDefinitions.map(column => {
-    return column.name === filterState.order.sort
-      ? {
-          ...column,
-          options: {
-            ...column.options,
-            sortDirection: filterState.order.dir,
-          },
-        }
-      : column;
+  const {
+    columns,
+    filterManager,
+    filterState,
+    debouncedFilterState,
+    dispatch,
+    totalRecords,
+    setTotalRecords,
+  } = useFilter({
+    columns: columnsDefinitions,
+    debounceTime,
+    rowsPerPage,
+    rowsPerPageOptions,
   });
 
-  function cleanSearchText(text) {
-    let newText = text;
-    if (text && text.value !== undefined) {
-      newText = text.value;
+  async function loadData() {
+    const { data } = await categoryHttp.list({
+      queryParams: {
+        search: filterManager.cleanSearchText(filterState.search),
+        page: filterState.pagination.page,
+        per_page: filterState.pagination.per_page,
+        sort: filterState.order.sort,
+        dir: filterState.order.dir,
+      },
+    });
+
+    if (subscribed.current) {
+      setData(data.data);
+      setTotalRecords(data.meta.total);
+      setLoading(false);
     }
-    return newText;
   }
 
   useEffect(() => {
     subscribed.current = true;
     setLoading(true);
-
-    async function loadData() {
-      const { data } = await categoryHttp.list({
-        queryParams: {
-          search: cleanSearchText(filterState.search),
-          page: filterState.pagination.page,
-          per_page: filterState.pagination.per_page,
-          sort: filterState.order.sort,
-          dir: filterState.order.dir,
-        },
-      });
-
-      if (subscribed.current) {
-        setData(data.data);
-        setTotalRecords(data.meta.total);
-        setLoading(false);
-      }
-    }
-
+    filterManager.pushHistory();
     loadData();
     return () => {
       subscribed.current = false;
     };
-  }, [
-    filterState.search,
-    filterState.pagination.page,
-    filterState.pagination.per_page,
-    filterState.order,
-  ]);
+  }, [filterManager.cleanSearchText(debouncedFilterState.search), debouncedFilterState.pagination.page, debouncedFilterState.pagination.per_page, debouncedFilterState.order]); // eslint-disable-line
 
   return (
     <GridView
@@ -134,7 +127,7 @@ export default function Table() {
       columns={columns}
       data={data}
       loading={loading}
-      debouncedSearchTime={300}
+      debouncedSearchTime={debounceSearchTime}
       options={{
         serverSide: true,
         responsive: 'scrollMaxHeight',
@@ -147,18 +140,12 @@ export default function Table() {
             handleClick={() => dispatch(Creators.setReset())}
           />
         ),
-        onSearchChange: value =>
-          dispatch(Creators.setSearch({ search: value })),
-        onChangePage: page => dispatch(Creators.setPage({ page: page + 1 })),
+        onSearchChange: value => filterManager.changeSearch(value),
+        onChangePage: page => filterManager.changePage(page),
         onChangeRowsPerPage: perPage =>
-          dispatch(Creators.setPerPage({ per_page: perPage })),
+          filterManager.changeRowsPerPage(perPage),
         onColumnSortChange: (changedColumn, direction) =>
-          dispatch(
-            Creators.setOrder({
-              sort: changedColumn,
-              dir: direction.includes('desc') ? 'desc' : 'asc',
-            })
-          ),
+          filterManager.changeColumnSort(changedColumn, direction),
       }}
     />
   );

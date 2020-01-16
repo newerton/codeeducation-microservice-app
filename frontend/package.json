@@ -27,6 +27,7 @@
     "reduxsauce": "^1.1.1",
     "route-parser": "^0.0.5",
     "styled-components": "^4.4.1",
+    "use-debounce": "^3.3.0",
     "yup": "^0.28.0"
   },
   "scripts": {
