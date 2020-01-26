@@ -34,13 +34,19 @@ export default function Form() {
       return;
     }
 
+    let isSubscribed = true;
     async function loadCategory() {
       const response = await categoryHttp.get(id);
-      setCategory(response.data.data);
-      setLoading(false);
+      if (isSubscribed) {
+        setCategory(response.data.data);
+        setLoading(false);
+      }
     }
 
     loadCategory();
+    return () => {
+      isSubscribed = false;
+    };
   }, [id]);
 
   function handleSubmit(data) {

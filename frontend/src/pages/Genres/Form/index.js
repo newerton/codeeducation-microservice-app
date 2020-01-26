@@ -31,13 +31,19 @@ export default function Form() {
   const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isSubscribed = true;
     async function loadCategories() {
-      const response = await categoryHttp.list();
-      setCategories(response.data.data);
-      setLoading(false);
+      const response = await categoryHttp.list({ queryParams: { all: '' } });
+      if (isSubscribed) {
+        setCategories(response.data.data);
+        setLoading(false);
+      }
     }
 
     loadCategories();
+    return () => {
+      isSubscribed = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -46,16 +52,23 @@ export default function Form() {
       return;
     }
 
+    let isSubscribed = true;
     async function loadGenre() {
       const { data } = await genreHttp.get(id);
       const responseData = data.data;
       responseData.categories_id = responseData.categories.map(item => {
         return item.id;
       });
-      setGenre(responseData);
+      if (isSubscribed) {
+        setGenre(responseData);
+      }
     }
 
     loadGenre();
+
+    return () => {
+      isSubscribed = false;
+    };
   }, [id]);
 
   function handleSubmit(data) {
