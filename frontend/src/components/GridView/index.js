@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 
 import {
   CircularProgress,
@@ -62,7 +62,7 @@ const makeDefaultOptions = debouncedSearchTime => ({
   },
 });
 
-export default function GridView({ ...props }) {
+function GridView({ ...props }, ref) {
   const theme = cloneDeep(useTheme());
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -106,7 +106,10 @@ export default function GridView({ ...props }) {
   }
 
   function getOriginalMuiDataTableProps() {
-    return omit(newProps, 'loading');
+    return {
+      ...omit(newProps, 'loading'),
+      ref,
+    };
   }
 
   applyLoading();
@@ -121,5 +124,8 @@ export default function GridView({ ...props }) {
 }
 
 GridView.propTtypes = {
+  ref: PropTypes.object,
   props: PropTypes.object,
 };
+
+export default forwardRef(GridView);

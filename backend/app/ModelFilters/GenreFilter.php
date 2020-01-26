@@ -2,7 +2,9 @@
 
 namespace App\ModelFilters;
 
-class CategoryFilter extends DefaultModelFilter
+use Illuminate\Database\Eloquent\Builder;
+
+class GenreFilter extends DefaultModelFilter
 {
     /**
      * Related Models that have ModelFilters as well as the method on the ModelFilter
@@ -20,8 +22,11 @@ class CategoryFilter extends DefaultModelFilter
         $this->query->where('name', 'LIKE', "%{$search}%");
     }
 
-    public function isActive($isActive)
+    public function categories($categories)
     {
-        $this->where('is_active', boolval($isActive));
+        $this->whereHas('categories', function (Builder $query) use ($categories) {
+            $query->whereIn('id', $categories)
+                ->orWhereIn('name', $categories);
+        });
     }
 }

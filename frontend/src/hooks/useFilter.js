@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { useHistory } from 'react-router';
 
 import { isEqual } from 'lodash';
@@ -7,42 +7,28 @@ import * as Yup from 'yup';
 
 import reducer, { Creators } from '~/store/filter';
 
-export default function useFilter(options) {
-  const history = useHistory();
-  const filterManager = new FilterManager({ ...options, history });
-  const INITIAL_STATE = filterManager.getStateFromUrl();
-  const [filterState, dispatch] = useReducer(reducer, INITIAL_STATE);
-  const [debouncedFilterState] = useDebounce(filterState, options.debounceTime);
-  const [totalRecords, setTotalRecords] = useState(0);
-
-  filterManager.state = filterState;
-  filterManager.dispatch = dispatch;
-
-  filterManager.applyOrderInColumns();
-
-  useEffect(() => {
-    filterManager.replaceHistory();
-  }, []); // eslint-disable-line
-
-  return {
-    columns: filterManager.columns,
-    filterManager,
-    filterState,
-    debouncedFilterState,
-    dispatch,
-    totalRecords,
-    setTotalRecords,
-  };
-}
-
 export class FilterManager {
   constructor(options) {
-    const { columns, rowsPerPage, rowsPerPageOptions, history } = options;
+    const {
+      columns,
+      rowsPerPage,
+      rowsPerPageOptions,
+      history,
+      tableRef,
+      extraFilter,
+    } = options;
     this.columns = columns;
     this.rowsPerPage = rowsPerPage;
     this.rowsPerPageOptions = rowsPerPageOptions;
     this.history = history;
+    this.tableRef = tableRef;
+    this.extraFilter = extraFilter;
     this.createValidationSchema();
+  }
+
+  resetTablePagination() {
+    this.tableRef.current.changeRowsPerPage(this.rowsPerPage);
+    this.tableRef.current.changePage(0);
   }
 
   changeSearch(value) {
@@ -64,6 +50,24 @@ export class FilterManager {
         dir: direction.includes('desc') ? 'desc' : 'asc',
       })
     );
+    this.resetTablePagination();
+  }
+
+  changeExtraFilter(data) {
+    this.dispatch(Creators.updateExtraFilter(data));
+  }
+
+  resetFilter() {
+    const INITIAL_STATE = {
+      ...this.schema.cast({}),
+      search: { value: null, update: true },
+    };
+    this.dispatch(
+      Creators.setReset({
+        state: INITIAL_STATE,
+      })
+    );
+    this.resetTablePagination();
   }
 
   applyOrderInColumns() {
@@ -92,7 +96,7 @@ export class FilterManager {
     this.history.replace({
       pathname: this.history.location.pathname,
       search: `?${new URLSearchParams(this.formatSearchParams())}`,
-      state: this.state,
+      state: this.debouncedState,
     });
   }
 
@@ -101,13 +105,13 @@ export class FilterManager {
       pathname: this.history.location.pathname,
       search: `?${new URLSearchParams(this.formatSearchParams())}`,
       state: {
-        ...this.state,
-        search: this.cleanSearchText(this.state.search),
+        ...this.debouncedState,
+        search: this.cleanSearchText(this.debouncedState.search),
       },
     };
 
     const prevState = this.history.location.state;
-    const nextState = this.state;
+    const nextState = this.debouncedState;
     if (isEqual(prevState, nextState)) {
       return;
     }
@@ -115,21 +119,23 @@ export class FilterManager {
   }
 
   formatSearchParams() {
-    const search = this.cleanSearchText(this.state.search);
-    const { page } = this.state.pagination;
-    const { per_page } = this.state.pagination;
-    const { sort } = this.state.order;
-    const { dir } = this.state.order;
+    const search = this.cleanSearchText(this.debouncedState.search);
+    const { page } = this.debouncedState.pagination;
+    const { per_page } = this.debouncedState.pagination;
+    const { sort } = this.debouncedState.order;
+    const { dir } = this.debouncedState.order;
 
     return {
       ...(search && search !== '' && { search }),
       ...(page > 1 && { page }),
       ...(per_page !== 5 && { per_page }),
       ...(sort && dir && { sort, dir }),
+      ...(this.extraFilter &&
+        this.extraFilter.formatSearchParams(this.debouncedState)),
     };
   }
 
-  getStateFromUrl() {
+  getStateFromURL() {
     const queryParams = new URLSearchParams(
       this.history.location.search.substr(1)
     );
@@ -143,6 +149,9 @@ export class FilterManager {
         sort: queryParams.get('sort'),
         dir: queryParams.get('dir'),
       },
+      ...(this.extraFilter && {
+        extraFilter: this.extraFilter.getStateFromURL(queryParams),
+      }),
     });
   }
 
@@ -158,8 +167,12 @@ export class FilterManager {
           )
           .default(1),
         per_page: Yup.number()
-          .oneOf(this.rowsPerPageOptions)
-          .transform(value => (isNaN(value) ? undefined : value))
+          .transform(value =>
+            isNaN(value) ||
+            !this.rowsPerPageOptions.includes(parseInt(value, 10))
+              ? undefined
+              : value
+          )
           .default(this.rowsPerPage),
       }),
       order: Yup.object().shape({
@@ -183,6 +196,38 @@ export class FilterManager {
           )
           .default(15),
       }),
+      ...(this.extraFilter && {
+        extraFilter: this.extraFilter.createValidationSchema(),
+      }),
     });
   }
+}
+
+export default function useFilter(options) {
+  const history = useHistory();
+  const filterManager = new FilterManager({ ...options, history });
+  const INITIAL_STATE = filterManager.getStateFromURL();
+  const [filterState, dispatch] = useReducer(reducer, INITIAL_STATE);
+  const [debouncedFilterState] = useDebounce(filterState, options.debounceTime);
+  const [totalRecords, setTotalRecords] = useState(0);
+
+  filterManager.state = filterState;
+  filterManager.debouncedState = debouncedFilterState;
+  filterManager.dispatch = dispatch;
+
+  filterManager.applyOrderInColumns();
+
+  useEffect(() => {
+    filterManager.replaceHistory();
+  }, []); // eslint-disable-line
+
+  return {
+    columns: filterManager.columns,
+    filterManager,
+    filterState,
+    debouncedFilterState,
+    dispatch,
+    totalRecords,
+    setTotalRecords,
+  };
 }

@@ -5,7 +5,8 @@ export const { Types, Creators } = createActions({
   setPage: ['payload'],
   setPerPage: ['payload'],
   setOrder: ['payload'],
-  setReset: [],
+  setReset: ['payload'],
+  updateExtraFilter: ['payload'],
 });
 
 export const INITIAL_STATE = {
@@ -18,6 +19,7 @@ export const INITIAL_STATE = {
     sort: null,
     dir: null,
   },
+  extraFilter: null,
 };
 
 function setSearch(state = INITIAL_STATE, action) {
@@ -62,11 +64,15 @@ function setOrder(state = INITIAL_STATE, action) {
 }
 
 function setReset(state = INITIAL_STATE, action) {
+  return action.payload.state;
+}
+
+function updateExtraFilter(state = INITIAL_STATE, action) {
   return {
-    ...INITIAL_STATE,
-    search: {
-      value: null,
-      update: true,
+    ...state,
+    extraFilter: {
+      ...state.extraFilter,
+      ...action.payload,
     },
   };
 }
@@ -77,6 +83,7 @@ const reducer = createReducer(INITIAL_STATE, {
   [Types.SET_PER_PAGE]: setPerPage,
   [Types.SET_ORDER]: setOrder,
   [Types.SET_RESET]: setReset,
+  [Types.UPDATE_EXTRA_FILTER]: updateExtraFilter,
 });
 
 export default reducer;

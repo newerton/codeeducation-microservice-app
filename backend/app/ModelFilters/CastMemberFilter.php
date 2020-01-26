@@ -2,7 +2,9 @@
 
 namespace App\ModelFilters;
 
-class CategoryFilter extends DefaultModelFilter
+use App\Models\CastMember;
+
+class CastMemberFilter extends DefaultModelFilter
 {
     /**
      * Related Models that have ModelFilters as well as the method on the ModelFilter
@@ -10,7 +12,7 @@ class CategoryFilter extends DefaultModelFilter
      *
      * @var array
      */
-    public $sortable = ['name', 'is_active', 'created_at'];
+    public $sortable = ['name', 'type', 'created_at'];
 
     /**
      * @param $search
@@ -20,8 +22,11 @@ class CategoryFilter extends DefaultModelFilter
         $this->query->where('name', 'LIKE', "%{$search}%");
     }
 
-    public function isActive($isActive)
+    public function type($type)
     {
-        $this->where('is_active', boolval($isActive));
+        $_type = (int)$type;
+        if (in_array($_type, CastMember::$types)) {
+            $this->where('type', $_type);
+        }
     }
 }
