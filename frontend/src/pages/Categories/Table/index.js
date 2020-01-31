@@ -151,7 +151,7 @@ export default function Table() {
   const isActiveFilterValue =
     filterState.extraFilter && filterState.extraFilter.isActive;
   columnIsActive.options.filterList = isActiveFilterValue || [];
-  const serverSideFilterList = columns.map(column => []);
+  const serverSideFilterList = columns.map(_ => []);
   if (isActiveFilterValue) {
     serverSideFilterList[indexColumnIsActive] = isActiveFilterValue;
   }
@@ -216,9 +216,10 @@ export default function Table() {
         onFilterChange: (column, filterList) => {
           const columnIndex = columns.findIndex(c => c.name === column);
           filterManager.changeExtraFilter({
-            [column]: filterList[columnIndex].length
-              ? filterList[columnIndex][0]
-              : null,
+            [column]:
+              filterList[columnIndex] && filterList[columnIndex].length
+                ? filterList[columnIndex][0]
+                : null,
           });
         },
         customToolbar: () => (
