@@ -51,6 +51,7 @@ const columnsDefinitions = [
     label: 'Ativo?',
     width: '5%',
     options: {
+      filter: false,
       filterOptions: {
         names: ['Sim', 'Não'],
       },
