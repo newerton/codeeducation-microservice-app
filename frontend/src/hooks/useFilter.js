@@ -58,7 +58,6 @@ export class FilterManager {
   }
 
   resetFilter() {
-    console.log('reset');
     const INITIAL_STATE = {
       ...this.schema.cast({}),
       search: { value: null, update: true },
