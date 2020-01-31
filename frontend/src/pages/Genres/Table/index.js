@@ -10,7 +10,6 @@ import * as Yup from 'yup';
 import GridView from '~/components/GridView';
 import FilterResetButton from '~/components/GridView/FilterResetButton';
 import useFilter from '~/hooks/useFilter';
-import { Creators } from '~/store/filter';
 import categoryHttp from '~/util/http/category-http';
 import genreHttp from '~/util/http/genre-http';
 // import { IsActiveMap } from '~/util/models';
@@ -127,7 +126,6 @@ export default function Table() {
     filterManager,
     filterState,
     debouncedFilterState,
-    dispatch,
     totalRecords,
     setTotalRecords,
   } = useFilter({
@@ -266,18 +264,21 @@ export default function Table() {
         rowsPerPage: filterState.pagination.per_page,
         rowsPerPageOptions,
         count: totalRecords,
-        onFilterChange: (column, filterList) => {
+        onFilterChange: (column, filterList, type) => {
+          if (type === 'reset') {
+            filterManager.resetFilter();
+            return;
+          }
           const columnIndex = columns.findIndex(c => c.name === column);
           filterManager.changeExtraFilter({
-            [column]: filterList[columnIndex].length
-              ? filterList[columnIndex]
-              : null,
+            [column]:
+              filterList[columnIndex] && filterList[columnIndex].length
+                ? filterList[columnIndex]
+                : null,
           });
         },
         customToolbar: () => (
-          <FilterResetButton
-            handleClick={() => dispatch(Creators.setReset())}
-          />
+          <FilterResetButton handleClick={() => filterManager.resetFilter()} />
         ),
         onSearchChange: value => filterManager.changeSearch(value),
         onChangePage: page => filterManager.changePage(page),
