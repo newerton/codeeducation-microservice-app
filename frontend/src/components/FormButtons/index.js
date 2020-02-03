@@ -42,7 +42,7 @@ export default function FormButtons({ isLoading, setFormType }) {
         type="submit"
         onClick={() => setFormType('save-and-new')}
       >
-        Salvar e adicionar uma nova categoria
+        Salvar e adicionar um novo
       </Button>
       <Button
         {...buttonProps}

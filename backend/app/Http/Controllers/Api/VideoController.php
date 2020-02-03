@@ -16,10 +16,10 @@ class VideoController extends BasicCrudController
         $this->rules = [
             'title' => 'required|max:255',
             'description' => 'required',
-            'year_launched' => 'required|date_format:Y',
+            'year_launched' => 'required|date_format:Y|min:4',
             'opened' => 'boolean',
             'rating' => 'required|in:' . implode(',', Video::RATING_LIST),
-            'duration' => 'required|integer',
+            'duration' => 'required|integer|min:2',
             'categories_id' => 'required|array|exists:categories,id,deleted_at,NULL',
             'genres_id' => [
                 'required',
