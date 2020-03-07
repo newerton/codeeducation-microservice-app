@@ -8,7 +8,7 @@ import {
   Radio,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useField } from '@rocketseat/unform';
+import { useField } from '@unform/core';
 import PropTypes from 'prop-types';
 
 const useStyles = makeStyles(() => ({
@@ -19,7 +19,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function RadioButton({ name, label, list, isLoading }) {
+export default function RadioButton({ name, label, list, loading }) {
   const classes = useStyles();
   const ref = useRef(null);
   const { fieldName, registerField, defaultValue, error } = useField(name);
@@ -57,7 +57,7 @@ export default function RadioButton({ name, label, list, isLoading }) {
                 value={key}
                 control={<Radio />}
                 label={list[key]}
-                disabled={isLoading}
+                disabled={loading}
               />
             ))}
         </RadioGroup>
@@ -75,9 +75,9 @@ RadioButton.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   list: PropTypes.shape({}).isRequired,
-  isLoading: PropTypes.bool,
+  loading: PropTypes.bool,
 };
 
 RadioButton.defaultProps = {
-  isLoading: false,
+  loading: false,
 };

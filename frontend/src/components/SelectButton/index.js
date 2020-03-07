@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useField } from '@rocketseat/unform';
+import { useField } from '@unform/core';
 import PropTypes from 'prop-types';
 
 const useStyles = makeStyles(() => ({
@@ -18,7 +18,7 @@ export default function SelectButton({
   label,
   list,
   multiple,
-  isLoading,
+  loading,
 }) {
   const classes = useStyles();
   const ref = useRef();
@@ -77,7 +77,7 @@ export default function SelectButton({
           onChange={multiple ? handleChangeMultiple : handleChange}
           labelWidth={labelWidth}
           ref={ref}
-          disabled={isLoading}
+          disabled={loading}
         >
           {list &&
             list.map(item => (
@@ -101,10 +101,10 @@ SelectButton.propTypes = {
   label: PropTypes.string.isRequired,
   list: PropTypes.array.isRequired,
   multiple: PropTypes.bool,
-  isLoading: PropTypes.bool,
+  loading: PropTypes.bool,
 };
 
 SelectButton.defaultProps = {
   multiple: false,
-  isLoading: false,
+  loading: false,
 };

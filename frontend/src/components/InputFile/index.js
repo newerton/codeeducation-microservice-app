@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 
 import { InputAdornment, TextField } from '@material-ui/core';
-import { useField } from '@rocketseat/unform';
+import { useField } from '@unform/core';
 import PropTypes from 'prop-types';
 
 function InputFile({ name, values, setValues, ...rest }, ref) {

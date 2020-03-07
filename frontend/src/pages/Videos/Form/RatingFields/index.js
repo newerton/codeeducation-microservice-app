@@ -1,4 +1,3 @@
-/* eslint react/no-array-index-key:0 */
 import React, { useEffect, useRef, useState } from 'react';
 
 import {
@@ -9,7 +8,7 @@ import {
   Radio,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useField } from '@rocketseat/unform';
+import { useField } from '@unform/core';
 import PropTypes from 'prop-types';
 
 import Rating from '~/components/Rating';
@@ -67,7 +66,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function RatingField({ name, isLoading }) {
+export default function RatingField({ name, loading }) {
   const classes = useStyles();
   const ref = useRef(null);
   const { fieldName, registerField, defaultValue, error } = useField(name);
@@ -86,7 +85,7 @@ export default function RatingField({ name, isLoading }) {
   }, [fieldName, defaultValue]);
 
   return (
-    <FormControl>
+    <FormControl margin="normal" error={error && true}>
       <FormLabel component="legend" className={classes.label}>
         Classificação
       </FormLabel>
@@ -103,7 +102,7 @@ export default function RatingField({ name, isLoading }) {
         {rating.map((props, key) => (
           <FormControlLabel
             key={key}
-            disabled={isLoading}
+            disabled={loading}
             className={classes.labelRating}
             {...props}
           />
@@ -120,9 +119,9 @@ export default function RatingField({ name, isLoading }) {
 
 RatingField.propTypes = {
   name: PropTypes.string.isRequired,
-  isLoading: PropTypes.bool,
+  loading: PropTypes.bool,
 };
 
 RatingField.defaultProps = {
-  isLoading: false,
+  loading: false,
 };

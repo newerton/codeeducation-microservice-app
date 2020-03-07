@@ -11,7 +11,7 @@ export default function UploadField({
   accept,
   label,
   name,
-  isLoading,
+  loading,
   ...rest
 }) {
   const fileRef = useRef(null);
@@ -19,7 +19,7 @@ export default function UploadField({
 
   return (
     <FormControl
-      disabled={isLoading}
+      disabled={loading}
       margin="normal"
       fullWidth
       {...rest.FormControlProps}
@@ -62,9 +62,9 @@ UploadField.propTypes = {
   accept: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  isLoading: PropTypes.bool,
+  loading: PropTypes.bool,
 };
 
 UploadField.defaultProps = {
-  isLoading: false,
+  loading: false,
 };
