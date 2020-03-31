@@ -22,11 +22,15 @@ class GenreFilter extends DefaultModelFilter
         $this->query->where('name', 'LIKE', "%{$search}%");
     }
 
+    /**
+     * @param $categories
+     */
     public function categories($categories)
     {
-        $this->whereHas('categories', function (Builder $query) use ($categories) {
-            $query->whereIn('id', $categories)
-                ->orWhereIn('name', $categories);
+        $idsOrNames = explode(',', $categories);
+        $this->whereHas('categories', function (Builder $query) use ($idsOrNames) {
+            $query->whereIn('id', $idsOrNames)
+                ->orWhereIn('name', $idsOrNames);
         });
     }
 }

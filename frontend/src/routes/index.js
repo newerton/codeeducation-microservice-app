@@ -4,6 +4,7 @@ import {
   DashboardRounded,
   CategoryRounded,
   PersonRounded,
+  VideocamRounded,
 } from '@material-ui/icons';
 
 import CastMembersForm from '../pages/CastMembers/Form';
@@ -13,6 +14,8 @@ import CategoriesList from '../pages/Categories/List';
 import Dashboard from '../pages/Dashboard';
 import GenresForm from '../pages/Genres/Form';
 import GenresList from '../pages/Genres/List';
+import VideosForm from '../pages/Videos/Form';
+import VideosList from '../pages/Videos/List';
 
 const routes = [
   {
@@ -96,6 +99,31 @@ const routes = [
     icon: <CategoryRounded />,
     path: '/genres/:id/edit',
     component: GenresForm,
+    exact: true,
+  },
+  // Gêneros
+  {
+    name: 'videos.list',
+    label: 'Vídeos',
+    icon: <VideocamRounded />,
+    path: '/videos',
+    component: VideosList,
+    exact: true,
+  },
+  {
+    name: 'videos.create',
+    label: 'Adicionar vídeos',
+    icon: <VideocamRounded />,
+    path: '/videos/create',
+    component: VideosForm,
+    exact: true,
+  },
+  {
+    name: 'videos.edit',
+    label: 'Editar vídeos',
+    icon: <VideocamRounded />,
+    path: '/videos/:id/edit',
+    component: VideosForm,
     exact: true,
   },
 ];

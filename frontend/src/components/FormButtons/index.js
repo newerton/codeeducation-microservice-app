@@ -16,15 +16,15 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-export default function FormButtons({ isLoading, setFormType }) {
+export default function FormButtons({ loading, setFormType }) {
   const classes = useStyles();
   const buttonProps = {
     className: classes.submit,
     color: 'secondary',
     variant: 'contained',
-    disabled: isLoading,
+    disabled: loading,
   };
-  const circularProgress = isLoading && (
+  const circularProgress = loading && (
     <CircularProgress size={26} className={classes.circularProgress} />
   );
 
@@ -42,7 +42,7 @@ export default function FormButtons({ isLoading, setFormType }) {
         type="submit"
         onClick={() => setFormType('save-and-new')}
       >
-        Salvar e adicionar uma nova categoria
+        Salvar e adicionar um novo
       </Button>
       <Button
         {...buttonProps}
@@ -57,10 +57,10 @@ export default function FormButtons({ isLoading, setFormType }) {
 }
 
 FormButtons.propTypes = {
-  isLoading: PropTypes.bool,
+  loading: PropTypes.bool,
   setFormType: PropTypes.func.isRequired,
 };
 
 FormButtons.defaultProps = {
-  isLoading: false,
+  loading: false,
 };

@@ -3,29 +3,48 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\CategoryResource;
-use App\Models\Category;
 use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 abstract class BasicCrudController extends Controller
 {
+    /**
+     * @var int
+     */
     protected $defaultPerPage = 15;
 
+    /**
+     * @return mixed
+     */
     protected abstract function model();
 
+    /**
+     * @return mixed
+     */
     protected abstract function rulesStore();
 
+    /**
+     * @return mixed
+     */
     protected abstract function rulesUpdate();
 
+    /**
+     * @return mixed
+     */
     protected abstract function resource();
 
+    /**
+     * @return mixed
+     */
     protected abstract function resourceCollection();
 
-
+    /**
+     * @param Request $request
+     * @return mixed
+     * @throws \ReflectionException
+     */
     public function index(Request $request)
     {
         $defaultPerPage = (int)$request->get('per_page', $this->defaultPerPage);
@@ -48,6 +67,11 @@ abstract class BasicCrudController extends Controller
             : $resourceCollectionClass::collection($data);
     }
 
+    /**
+     * @param Request $request
+     * @return mixed
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function store(Request $request)
     {
         $validatedData = $this->validate($request, $this->rulesStore());
@@ -57,6 +81,10 @@ abstract class BasicCrudController extends Controller
         return new $resource($obj);
     }
 
+    /**
+     * @param $id
+     * @return Builder|\Illuminate\Database\Eloquent\Model
+     */
     protected function findOrFail($id)
     {
         $model = $this->model();
@@ -64,6 +92,10 @@ abstract class BasicCrudController extends Controller
         return $this->queryBuilder()->where($keyName, $id)->firstOrFail();
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     */
     public function show($id)
     {
         $obj = $this->findOrFail($id);
@@ -71,6 +103,12 @@ abstract class BasicCrudController extends Controller
         return new $resource($obj);
     }
 
+    /**
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function update(Request $request, $id)
     {
         $obj = $this->findOrFail($id);
@@ -80,11 +118,46 @@ abstract class BasicCrudController extends Controller
         return new $resource($obj);
     }
 
+    /**
+     * @param $id
+     * @return \Illuminate\Http\Response
+     * @throws \Exception
+     */
     public function destroy($id)
     {
         $obj = $this->findOrFail($id);
         $obj->delete();
         return response()->noContent(); // 204 - No Content
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function destroyCollection(Request $request)
+    {
+        $data = $this->validateIds($request);
+        $this->model()::whereIn('id', $data['ids'])->delete();
+        return response()->noContent(); // 204 - No Content
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    protected function validateIds(Request $request)
+    {
+        $model = $this->model();
+        $ids = explode(',', $request->get('ids'));
+        $validator = \Validator::make(
+            [
+                'ids' => $ids,
+            ],
+            [
+                'ids' => 'required|exists:' . (new $model)->getTable() . ',id',
+            ]
+        );
+        return $validator->validate();
     }
 
     /**

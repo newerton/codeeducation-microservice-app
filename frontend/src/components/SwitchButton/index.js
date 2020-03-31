@@ -1,10 +1,10 @@
 import React, { useRef, useEffect, useState } from 'react';
 
 import { Switch, FormControlLabel } from '@material-ui/core';
-import { useField } from '@rocketseat/unform';
+import { useField } from '@unform/core';
 import PropTypes from 'prop-types';
 
-export default function SwitchButton({ name, label, isLoading }) {
+export default function SwitchButton({ name, label, loading }) {
   const ref = useRef(null);
   const { fieldName, registerField, defaultValue, error } = useField(name);
   const [values, setValues] = useState(defaultValue);
@@ -33,7 +33,7 @@ export default function SwitchButton({ name, label, isLoading }) {
             ref={ref}
             data-value={values}
             checked={values}
-            disabled={isLoading}
+            disabled={loading}
           />
         }
         label={label}
@@ -46,9 +46,9 @@ export default function SwitchButton({ name, label, isLoading }) {
 SwitchButton.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
-  isLoading: PropTypes.bool,
+  loading: PropTypes.bool,
 };
 
 SwitchButton.defaultProps = {
-  isLoading: false,
+  loading: false,
 };

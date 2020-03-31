@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import { TextField } from '@material-ui/core';
-import { useField } from '@rocketseat/unform';
+import { useField } from '@unform/core';
 import PropTypes from 'prop-types';
 
-export default function InputButton({ name, label, isLoading, ...rest }) {
+export default function InputButton({ name, label, loading, ...rest }) {
   const ref = useRef(null);
   const { fieldName, registerField, defaultValue, error } = useField(name);
   const [values, setValues] = useState(defaultValue);
@@ -35,7 +35,7 @@ export default function InputButton({ name, label, isLoading, ...rest }) {
         helperText={error}
         value={values}
         data-value={values}
-        disabled={isLoading}
+        disabled={loading}
         {...rest}
       />
     </>
@@ -45,9 +45,9 @@ export default function InputButton({ name, label, isLoading, ...rest }) {
 InputButton.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
-  isLoading: PropTypes.bool,
+  loading: PropTypes.bool,
 };
 
 InputButton.defaultProps = {
-  isLoading: false,
+  loading: false,
 };
