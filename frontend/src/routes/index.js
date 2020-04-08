@@ -5,6 +5,7 @@ import {
   CategoryRounded,
   PersonRounded,
   VideocamRounded,
+  CloudUploadRounded,
 } from '@material-ui/icons';
 
 import CastMembersForm from '../pages/CastMembers/Form';
@@ -14,6 +15,7 @@ import CategoriesList from '../pages/Categories/List';
 import Dashboard from '../pages/Dashboard';
 import GenresForm from '../pages/Genres/Form';
 import GenresList from '../pages/Genres/List';
+import UploadsList from '../pages/Uploads/List';
 import VideosForm from '../pages/Videos/Form';
 import VideosList from '../pages/Videos/List';
 
@@ -124,6 +126,15 @@ const routes = [
     icon: <VideocamRounded />,
     path: '/videos/:id/edit',
     component: VideosForm,
+    exact: true,
+  },
+  // Uploads
+  {
+    name: 'uploads.list',
+    label: 'Uploads',
+    icon: <CloudUploadRounded />,
+    path: '/uploads',
+    component: UploadsList,
     exact: true,
   },
 ];

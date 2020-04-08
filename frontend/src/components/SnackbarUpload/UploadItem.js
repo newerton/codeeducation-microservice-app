@@ -11,6 +11,7 @@ import {
 } from '@material-ui/core';
 import { Movie } from '@material-ui/icons';
 
+import UploadAction from './UploadAction';
 import UploadProgress from './UploadProgress';
 
 const useStyles = makeStyles(theme => ({
@@ -30,7 +31,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function UploadItem({ ...rest }) {
+export default function UploadItem({ children, ...rest }) {
   const classes = useStyles();
 
   return (
@@ -44,10 +45,11 @@ export default function UploadItem({ ...rest }) {
             className={classes.listItemText}
             primary={
               <Typography variant="subtitle2" color="inherit" noWrap>
-                Star Wars
+                {children}
               </Typography>
             }
           />
+          <UploadAction />
           <UploadProgress size={30} />
         </ListItem>
       </Tooltip>

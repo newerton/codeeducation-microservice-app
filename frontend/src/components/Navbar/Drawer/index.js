@@ -30,6 +30,7 @@ const listRoutes = [
   'cast_members.list',
   'genres.list',
   'videos.list',
+  'uploads.list',
 ];
 const menuRoutes = routes.filter(route => listRoutes.includes(route.name));
 
