@@ -173,6 +173,7 @@ export default function Table() {
     return () => {
       subscribed.current = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     // eslint-disable-line
     filterManager.cleanSearchText(debouncedFilterState.search), // eslint-disable-line

@@ -1,4 +1,11 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useDispatch,
+} from 'react';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 
 import {
@@ -26,6 +33,7 @@ import CategoryFields from '~/pages/Videos/Form/CategoryFields';
 import GenreFields from '~/pages/Videos/Form/GenreFields';
 import RatingField from '~/pages/Videos/Form/RatingFields';
 import { schemaValidations } from '~/pages/Videos/Form/schemaValidations';
+import { addUpload } from '~/store/upload';
 import history from '~/util/history';
 import videoHttp from '~/util/http/video-http';
 import toast from '~/util/toast';
@@ -69,6 +77,9 @@ export default function Form() {
   const [castMembers, setCastMembers] = useState([]);
   const loading = useContext(LoadingContext);
   const snackbar = useSnackbar();
+  const uploads = useSelector(state => state.uploads);
+
+  // const dispatch = useDispatch(addUpload());
 
   useEffect(() => {
     snackbar.enqueueSnackbar('', {

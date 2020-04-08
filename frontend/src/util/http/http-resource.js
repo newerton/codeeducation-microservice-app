@@ -32,7 +32,7 @@ export default class HttpResource {
     return http.post(this.resource, sendData);
   }
 
-  async update(id, data, options = {}) {
+  async update(id, data, options = {}, config = {}) {
     let sendData = data;
 
     if (await this.containsFile(data)) {
