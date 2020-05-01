@@ -38,10 +38,22 @@ export default class HttpResource {
     if (await this.containsFile(data)) {
       sendData = await this.getFormData(data);
     }
+    const { request, config } = options;
+    return !options || !request || !request.usePost
+      ? http.put(`${this.resource}/${id}`, sendData, config)
+      : http.post(`${this.resource}/${id}`, sendData, config);
+  }
+
+  async partialUpdate(id, data, options = {}, config = {}) {
+    let sendData = data;
+
+    if (await this.containsFile(data)) {
+      sendData = await this.getFormData(data);
+    }
     const { request } = options;
     return !options || !request || !request.usePost
-      ? http.put(`${this.resource}/${id}`, sendData)
-      : http.post(`${this.resource}/${id}`, sendData);
+      ? http.put(`${this.resource}/${id}`, sendData, config)
+      : http.post(`${this.resource}/${id}`, sendData, config);
   }
 
   async delete(id) {
