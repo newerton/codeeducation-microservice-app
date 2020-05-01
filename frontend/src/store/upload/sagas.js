@@ -1,18 +1,71 @@
 /* eslint-disable no-restricted-syntax */
-import { actionChannel, take, call } from 'redux-saga/effects';
+import { eventChannel, END } from 'redux-saga';
+import { actionChannel, take, call, put } from 'redux-saga/effects';
 
 import videoHttp from '~/util/http/video-http';
 
-import { Types } from './index';
+import { Types, Creators } from './index';
 
 function sendUpload({ id, fileInfo }) {
-  return videoHttp.update(id, {
-    [fileInfo.fileField]: fileInfo.file,
+  return eventChannel(emitter => {
+    videoHttp
+      .partialUpdate(
+        id,
+        {
+          _method: 'PATCH',
+          [fileInfo.fileField]: fileInfo.file,
+        },
+        {
+          http: {
+            usePost: true,
+          },
+          config: {
+            headers: {
+              ignoreLoading: true,
+            },
+            onUploadProgress(progressEvent) {
+              if (progressEvent.lengthComputable) {
+                const progress = progressEvent.loaded / progressEvent.total;
+                emitter({ progress });
+              }
+            },
+          },
+        }
+      )
+      .then(response => emitter({ response }))
+      .catch(error => emitter(error))
+      .finally(() => emitter(END));
+    const unsubscribe = () => {};
+    return unsubscribe;
   });
 }
 
 function* uploadFile({ video, fileInfo }) {
-  const event = yield call(sendUpload, { id: video.id, fileInfo });
+  const channel = yield call(sendUpload, { id: video.id, fileInfo });
+  while (true) {
+    try {
+      const { progress, response } = yield take(channel);
+      if (response) {
+        return response;
+      }
+      yield put(
+        Creators.updateProgress({
+          video,
+          fileField: fileInfo.fileField,
+          progress,
+        })
+      );
+    } catch (e) {
+      yield put(
+        Creators.setUploadError({
+          video,
+          fileField: fileInfo.fileField,
+          error: e,
+        })
+      );
+      throw e;
+    }
+  }
 }
 
 export function* uploadWatcherSaga() {
@@ -20,17 +73,12 @@ export function* uploadWatcherSaga() {
   while (true) {
     const { payload } = yield take(newFilesChannel);
     for (const fileInfo of payload.files) {
-      yield call(
-        uploadFile,
-        { video: payload.video, fileInfo },
-        {
-          config: {
-            onUploadProgress(progressEvent) {
-              console.log(progressEvent);
-            },
-          },
-        }
-      );
+      try {
+        const response = yield call(uploadFile, {
+          video: payload.video,
+          fileInfo,
+        });
+      } catch (e) {}
     }
   }
 }
