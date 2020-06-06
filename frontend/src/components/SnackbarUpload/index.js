@@ -1,4 +1,5 @@
 import React, { forwardRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import {
   Card,
@@ -12,6 +13,8 @@ import {
 import { Close, ExpandMore, ExpandLess } from '@material-ui/icons';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
+
+import { countInProgress } from '~/store/upload/getters';
 
 import UploadItem from './UploadItem';
 
@@ -43,6 +46,10 @@ function SnackbarUpload({ ...props }, ref) {
   const { closeSnackbar } = useSnackbar();
   const [expanded, setExpanded] = useState(true);
 
+  const uploads = useSelector(state => state.upload.uploads);
+
+  const totalInProgress = countInProgress(uploads);
+
   function handleCollapse() {
     setExpanded(!expanded);
   }
@@ -50,7 +57,7 @@ function SnackbarUpload({ ...props }, ref) {
     <Card ref={ref} className={classes.card}>
       <CardActions classes={{ root: classes.cardActionRoot }}>
         <Typography variant="subtitle2" className={classes.title}>
-          Fazendo upload de 10 vídeo(s)
+          Fazendo upload de {totalInProgress} vídeo(s)
         </Typography>
         <div className={classes.icons}>
           <IconButton color="inherit" onClick={handleCollapse}>
@@ -63,8 +70,9 @@ function SnackbarUpload({ ...props }, ref) {
       </CardActions>
       <Collapse in={expanded}>
         <List className={classes.list}>
-          <UploadItem />
-          <UploadItem />
+          {uploads.map((upload, key) => (
+            <UploadItem key={key} upload={upload} />
+          ))}
         </List>
       </Collapse>
     </Card>

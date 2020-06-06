@@ -5,7 +5,12 @@ import { Autocomplete } from '@material-ui/lab';
 import { useDebounce } from 'use-debounce';
 
 export default function AsyncAutoComplete({ ...rest }) {
-  const { TextFieldProps, AutocompleteProps, debounceTime = 300 } = rest;
+  const {
+    TextFieldProps,
+    AutocompleteProps,
+    debounceTime = 300,
+    fetchOptions,
+  } = rest;
   const {
     freeSolo = false,
     onOpen,
@@ -79,7 +84,7 @@ export default function AsyncAutoComplete({ ...rest }) {
 
     async function loadData() {
       setLoading(true);
-      const data = await rest.fetchOptions(debouncedSearchText);
+      const data = await fetchOptions(debouncedSearchText);
       if (isSubscribed) {
         setOptions(data);
         setLoading(false);
@@ -90,7 +95,7 @@ export default function AsyncAutoComplete({ ...rest }) {
     return () => {
       isSubscribed = false;
     };
-  }, [freeSolo ? debouncedSearchText : open]); // eslint-disable-line
+  }, [freeSolo, debouncedSearchText, open, fetchOptions]);
 
   return <Autocomplete {...autoCompleteProps} />;
 }

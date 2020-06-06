@@ -3,9 +3,8 @@ import React, {
   useEffect,
   useRef,
   useState,
-  useDispatch,
+  useCallback,
 } from 'react';
-import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 
 import {
@@ -33,7 +32,6 @@ import CategoryFields from '~/pages/Videos/Form/CategoryFields';
 import GenreFields from '~/pages/Videos/Form/GenreFields';
 import RatingField from '~/pages/Videos/Form/RatingFields';
 import { schemaValidations } from '~/pages/Videos/Form/schemaValidations';
-import { addUpload } from '~/store/upload';
 import history from '~/util/history';
 import videoHttp from '~/util/http/video-http';
 import toast from '~/util/toast';
@@ -77,9 +75,6 @@ export default function Form() {
   const [castMembers, setCastMembers] = useState([]);
   const loading = useContext(LoadingContext);
   const snackbar = useSnackbar();
-  const uploads = useSelector(state => state.uploads);
-
-  // const dispatch = useDispatch(addUpload());
 
   useEffect(() => {
     snackbar.enqueueSnackbar('', {
@@ -111,70 +106,77 @@ export default function Form() {
     };
   }, [id]); // eslint-disable-line
 
-  async function handleSubmit(data) {
-    try {
-      // Remove all previous errors
-      formRef.current.setErrors({});
+  const handleSubmit = useCallback(
+    async data => {
+      try {
+        // Remove all previous errors
+        formRef.current.setErrors({});
 
-      await schemaValidations.validate(data, {
-        abortEarly: false,
-      });
-
-      const sendData = omit(data, ['cast_members', 'genres', 'categories']);
-      sendData.genres_id = JSON.parse(data.genres).map(item => item.id);
-      sendData.categories_id = JSON.parse(data.categories).map(item => item.id);
-      sendData.cast_members_id = JSON.parse(data.cast_members).map(
-        item => item.id
-      );
-
-      const http = !id
-        ? await videoHttp.create(sendData)
-        : await videoHttp.update(
-            id,
-            { ...sendData, _method: 'PUT' },
-            { request: { usePost: true } }
-          );
-
-      http
-        .then(response => {
-          toast.success(`Vídeo ${id ? 'editado' : 'cadastrado'} com sucesso!`);
-          if (formType === 'save') {
-            history.push('/videos');
-          }
-          if (formType === 'save-and-new') {
-            history.push('/videos/create');
-          }
-          if (formType === 'save-and-edit') {
-            const videoId = response.data.data.id;
-            const urlRedirect = `/videos/${videoId}/edit`;
-            if (id) {
-              history.replace(urlRedirect);
-            } else {
-              history.push(urlRedirect);
-            }
-          }
-        })
-        .catch(err => {
-          const { errors } = err.response.data;
-          if (errors) {
-            const firstObj = Object.keys(errors)[0];
-            toast.error(errors[firstObj][0]);
-          }
+        await schemaValidations.validate(data, {
+          abortEarly: false,
         });
-    } catch (err) {
-      const validationErrors = {};
 
-      if (err instanceof Yup.ValidationError) {
-        toast.error(
-          'Formulário inválido. Reveja os campos marcados de vermelho'
+        const sendData = omit(data, ['cast_members', 'genres', 'categories']);
+        sendData.genres_id = JSON.parse(data.genres).map(item => item.id);
+        sendData.categories_id = JSON.parse(data.categories).map(
+          item => item.id
         );
-        err.inner.forEach(error => {
-          validationErrors[error.path] = error.message;
-        });
-        formRef.current.setErrors(validationErrors);
+        sendData.cast_members_id = JSON.parse(data.cast_members).map(
+          item => item.id
+        );
+
+        const http = !id
+          ? await videoHttp.create(sendData)
+          : await videoHttp.update(
+              id,
+              { ...sendData, _method: 'PUT' },
+              { request: { usePost: true } }
+            );
+
+        http
+          .then(response => {
+            toast.success(
+              `Vídeo ${id ? 'editado' : 'cadastrado'} com sucesso!`
+            );
+            if (formType === 'save') {
+              history.push('/videos');
+            }
+            if (formType === 'save-and-new') {
+              history.push('/videos/create');
+            }
+            if (formType === 'save-and-edit') {
+              const videoId = response.data.data.id;
+              const urlRedirect = `/videos/${videoId}/edit`;
+              if (id) {
+                history.replace(urlRedirect);
+              } else {
+                history.push(urlRedirect);
+              }
+            }
+          })
+          .catch(err => {
+            const { errors } = err.response.data;
+            if (errors) {
+              const firstObj = Object.keys(errors)[0];
+              toast.error(errors[firstObj][0]);
+            }
+          });
+      } catch (err) {
+        const validationErrors = {};
+
+        if (err instanceof Yup.ValidationError) {
+          toast.error(
+            'Formulário inválido. Reveja os campos marcados de vermelho'
+          );
+          err.inner.forEach(error => {
+            validationErrors[error.path] = error.message;
+          });
+          formRef.current.setErrors(validationErrors);
+        }
       }
-    }
-  }
+    },
+    [formType, id]
+  );
 
   return (
     <>

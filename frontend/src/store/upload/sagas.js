@@ -74,11 +74,13 @@ export function* uploadWatcherSaga() {
     const { payload } = yield take(newFilesChannel);
     for (const fileInfo of payload.files) {
       try {
-        const response = yield call(uploadFile, {
+        yield call(uploadFile, {
           video: payload.video,
           fileInfo,
         });
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     }
   }
 }

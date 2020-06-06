@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 
 import Typography from '@material-ui/core/Typography';
 import { useField } from '@unform/core';
@@ -47,7 +47,7 @@ export default function CategoryFields({
     setValues(categories);
   }, [categories]);
 
-  function fetchOptions() {
+  const fetchOptions = useCallback(() => {
     if (genres.length > 0) {
       return autocompleteHttp(
         categoryHttp.list({
@@ -59,7 +59,7 @@ export default function CategoryFields({
       ).then(data => data.data);
     }
     return false;
-  }
+  }, [autocompleteHttp, genres]);
 
   return (
     <>

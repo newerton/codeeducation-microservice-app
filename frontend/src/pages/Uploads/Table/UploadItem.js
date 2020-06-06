@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function UploadItem({ children, ...rest }) {
+export default function UploadItem({ uploadOrFile, children, ...rest }) {
   const classes = useStyles();
 
   function makeIcon() {
@@ -42,8 +42,8 @@ export default function UploadItem({ children, ...rest }) {
               alignItems="center"
               justify="flex-end"
             >
-              <UploadProgress size="48" />
-              <UploadAction />
+              <UploadProgress size="48" uploadOrFile={uploadOrFile} />
+              <UploadAction uploadOrFile={uploadOrFile} />
             </Grid>
           </Grid>
         </Grid>
