@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 import {
   Card,
@@ -14,6 +15,8 @@ import {
 } from '@material-ui/core';
 import { ExpandMoreOutlined } from '@material-ui/icons';
 
+import { VideoFileFieldsMap } from '~/util/models';
+
 import UploadItem from './UploadItem';
 
 const useStyles = makeStyles(theme => ({
@@ -28,27 +31,44 @@ const useStyles = makeStyles(theme => ({
 
 export default function Table() {
   const classes = useStyles();
+
+  const uploads = useSelector(state => state.upload.uploads);
+
   return (
-    <Card elevation="5">
-      <CardContent>
-        <UploadItem>Video - Star Wars</UploadItem>
-        <ExpansionPanel style={{ margin: 0 }}>
-          <ExpansionPanelSummary
-            className={classes.panelSummary}
-            expandIcon={<ExpandMoreOutlined className={classes.expandedIcon} />}
-          >
-            <Typography>Ver detalhes</Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails style={{ padding: 0 }}>
-            <Grid item xs="12">
-              <List style={{ padding: 0 }} dense>
-                <Divider />
-                <UploadItem>Principal - starwars.mp4</UploadItem>
-              </List>
-            </Grid>
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
-      </CardContent>
-    </Card>
+    <>
+      {uploads.map((upload, index) => (
+        <Card elevation="5" key={index}>
+          <CardContent>
+            <UploadItem uploadOrFile={upload}>{upload.video.title}</UploadItem>
+            <ExpansionPanel style={{ margin: 0 }}>
+              <ExpansionPanelSummary
+                className={classes.panelSummary}
+                expandIcon={
+                  <ExpandMoreOutlined className={classes.expandedIcon} />
+                }
+              >
+                <Typography>Ver detalhes</Typography>
+              </ExpansionPanelSummary>
+              <ExpansionPanelDetails style={{ padding: 0 }}>
+                <Grid item xs="12">
+                  <List style={{ padding: 0 }} dense>
+                    {uploads.files.map((file, key) => (
+                      <React.Fragment key={key}>
+                        <Divider />
+                        <UploadItem uploadOrFile={file}>
+                          {`${VideoFileFieldsMap[file.fileField]} - ${
+                            file.filename
+                          }`}
+                        </UploadItem>
+                      </React.Fragment>
+                    ))}
+                  </List>
+                </Grid>
+              </ExpansionPanelDetails>
+            </ExpansionPanel>
+          </CardContent>
+        </Card>
+      ))}
+    </>
   );
 }

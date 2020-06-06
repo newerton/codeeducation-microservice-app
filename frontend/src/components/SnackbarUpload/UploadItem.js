@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   Divider,
@@ -10,6 +10,8 @@ import {
   Tooltip,
 } from '@material-ui/core';
 import { Movie } from '@material-ui/icons';
+
+import { hasError } from '~/store/upload/getters';
 
 import UploadAction from './UploadAction';
 import UploadProgress from './UploadProgress';
@@ -31,13 +33,29 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function UploadItem({ children, ...rest }) {
+export default function UploadItem({ upload, ...rest }) {
   const classes = useStyles();
+  const error = hasError(upload);
+  const [itemHover, setItemHover] = useState(false);
 
   return (
     <>
-      <Tooltip title="Não foi possível" placement="left">
-        <ListItem className={classes.listItem} button>
+      <Tooltip
+        disableFocusListener
+        disableTouchListener
+        title={
+          error
+            ? 'Não foi possível fazer o upload, clique para mais detalhes'
+            : ''
+        }
+        placement="left"
+      >
+        <ListItem
+          className={classes.listItem}
+          button
+          onMouseOver={() => setItemHover(true)}
+          onMouseLeave={() => setItemHover(false)}
+        >
           <ListItemIcon className={classes.movieIcon}>
             <Movie />
           </ListItemIcon>
@@ -45,12 +63,12 @@ export default function UploadItem({ children, ...rest }) {
             className={classes.listItemText}
             primary={
               <Typography variant="subtitle2" color="inherit" noWrap>
-                {children}
+                {upload.video.title}
               </Typography>
             }
           />
-          <UploadAction />
-          <UploadProgress size={30} />
+          <UploadProgress size={30} uploadOrFile={upload} />
+          <UploadAction upload={upload} hover={itemHover} />
         </ListItem>
       </Tooltip>
       <Divider component="li" />

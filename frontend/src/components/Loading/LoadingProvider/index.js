@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
+import { omit } from 'lodash';
+
 import LoadingContext from '~/components/Loading/LoadingContext';
 import {
   addGlobalRequestInterceptor,
@@ -19,10 +21,11 @@ const LoadingProvider = props => {
   useMemo(() => {
     let isSubscribed = true;
     const requestIds = addGlobalRequestInterceptor(config => {
-      if (isSubscribed) {
+      if (isSubscribed && config.headers.hasOwnProperty('ignoreLoadin')) {
         setLoading(true);
         setCounterRequest(prevCountRequest => prevCountRequest + 1);
       }
+      config.headers = omit(config.headers, 'ignoreLoading');
       return config;
     });
     const responseIds = addGlobalResponseInterceptor(

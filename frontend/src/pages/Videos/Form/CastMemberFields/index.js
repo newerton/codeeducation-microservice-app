@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 
 import Typography from '@material-ui/core/Typography';
 import { useField } from '@unform/core';
@@ -45,13 +45,16 @@ export default function CastMemberFields({
     setValues(castMembers);
   }, [castMembers]);
 
-  function fetchOptions(searchText) {
-    return autocompleteHttp(
-      castMemberHttp.list({
-        queryParams: { search: searchText, all: '' },
-      })
-    ).then(data => data.data);
-  }
+  const fetchOptions = useCallback(
+    searchText => {
+      return autocompleteHttp(
+        castMemberHttp.list({
+          queryParams: { search: searchText, all: '' },
+        })
+      ).then(data => data.data);
+    },
+    [autocompleteHttp]
+  );
 
   return (
     <>

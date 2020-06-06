@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 
 import Typography from '@material-ui/core/Typography';
 import { useField } from '@unform/core';
@@ -49,13 +49,16 @@ export default function GenreFields({
     setValues(genres);
   }, [genres]);
 
-  function fetchOptions(searchText) {
-    return autocompleteHttp(
-      genreHttp.list({
-        queryParams: { search: searchText, all: '' },
-      })
-    ).then(data => data.data);
-  }
+  const fetchOptions = useCallback(
+    searchText => {
+      return autocompleteHttp(
+        genreHttp.list({
+          queryParams: { search: searchText, all: '' },
+        })
+      ).then(data => data.data);
+    },
+    [autocompleteHttp]
+  );
 
   return (
     <>
