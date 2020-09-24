@@ -5,7 +5,7 @@ import {RestComponent, RestServer} from '@loopback/rest';
 import {RestExplorerBindings} from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
-import {RestExplorerComponent} from './components';
+import {RestExplorerComponent, ValidatorsComponent} from './components';
 import {MySequence} from './sequence';
 import {RabbitmqServer} from './servers';
 
@@ -31,6 +31,7 @@ export class MicroCatalogApplication extends BootMixin(
       path: '/explorer',
     });
     this.component(RestExplorerComponent);
+    this.component(ValidatorsComponent);
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
@@ -44,5 +45,9 @@ export class MicroCatalogApplication extends BootMixin(
     };
 
     this.servers([RabbitmqServer]);
+  }
+
+  async boot() {
+    await super.boot();
   }
 }

@@ -21,7 +21,7 @@ function sendUpload({ id, fileInfo }) {
           },
           config: {
             headers: {
-              ignoreLoading: true,
+              'x-ignore-loading': true,
             },
             onUploadProgress(progressEvent) {
               if (progressEvent.lengthComputable) {

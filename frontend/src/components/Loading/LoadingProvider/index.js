@@ -12,7 +12,7 @@ import {
 
 const LoadingProvider = props => {
   const [loading, setLoading] = useState(false);
-  const [counterRequest, setCounterRequest] = useState(false);
+  const [counterRequest, setCounterRequest] = useState(0);
 
   function decrementCountRequest() {
     setCounterRequest(prevCountRequest => prevCountRequest - 1);
@@ -21,23 +21,23 @@ const LoadingProvider = props => {
   useMemo(() => {
     let isSubscribed = true;
     const requestIds = addGlobalRequestInterceptor(config => {
-      if (isSubscribed && config.headers.hasOwnProperty('ignoreLoadin')) {
+      if (isSubscribed && config.headers.hasOwnProperty('x-ignore-loading')) {
         setLoading(true);
         setCounterRequest(prevCountRequest => prevCountRequest + 1);
       }
-      config.headers = omit(config.headers, 'ignoreLoading');
+      // config.headers = omit(config.headers, 'ignoreLoading');
       return config;
     });
     const responseIds = addGlobalResponseInterceptor(
       response => {
-        if (isSubscribed) {
+        if (isSubscribed && response.config.headers.hasOwnProperty('x-ignore-loading')) {
           setLoading(false);
           decrementCountRequest();
         }
         return response;
       },
       err => {
-        if (isSubscribed) {
+        if (isSubscribed && err.config.headers.hasOwnProperty('x-ignore-loading')) {
           setLoading(false);
           decrementCountRequest();
         }

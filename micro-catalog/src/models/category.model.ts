@@ -14,13 +14,20 @@ export class Category extends Entity {
   @property({
     type: 'string',
     required: true,
+    jsonSchema: {
+      minLength: 1,
+      maxLength: 255,
+    },
   })
   name: string;
 
   @property({
     type: 'string',
     required: false,
-    default: '',
+    jsonSchema: {
+      nullable: true,
+    },
+    default: null,
   })
   description: string;
 

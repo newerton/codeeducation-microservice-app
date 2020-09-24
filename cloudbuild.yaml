@@ -1,6 +1,7 @@
 steps:
-  - id: "Criando o service account storage  json"
-    name: "gcr.io/cloud-builders/gcloud"
+  - id: "Criando o service account storage json"
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
     args:
       - kms
       - encrypt
@@ -19,6 +20,10 @@ steps:
       - GOOGLE_CLOUD_STORAGE_BUCKET=codeeducation-micro-videos
       - GOOGLE_CLOUD_STORAGE_API_URI=https://storage.cloud.google.com/codeeducation-micro-videos
       - TESTING_PROD=true
+
+  - id: "Chown in /var/www"
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['exec','-u','root','-t','app','chown','-R','www-data:www-data','/var/www']
 
   - id: "Rodando composer"
     name: "gcr.io/cloud-builders/docker"

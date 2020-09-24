@@ -5,6 +5,7 @@ import React, {
   useState,
   useCallback,
 } from 'react';
+import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router';
 
 import {
@@ -32,9 +33,13 @@ import CategoryFields from '~/pages/Videos/Form/CategoryFields';
 import GenreFields from '~/pages/Videos/Form/GenreFields';
 import RatingField from '~/pages/Videos/Form/RatingFields';
 import { schemaValidations } from '~/pages/Videos/Form/schemaValidations';
+import { Creators } from '~/store/upload';
 import history from '~/util/history';
 import videoHttp from '~/util/http/video-http';
+import { VideoFileFieldsMap } from '~/util/models';
 import toast from '~/util/toast';
+
+const fileFields = Object.keys(VideoFileFieldsMap);
 
 const useStyles = makeStyles(() => ({
   label: {
@@ -75,17 +80,9 @@ export default function Form() {
   const [castMembers, setCastMembers] = useState([]);
   const loading = useContext(LoadingContext);
   const snackbar = useSnackbar();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    snackbar.enqueueSnackbar('', {
-      key: 'snackbar-upload',
-      persist: true,
-      anchorOrigin: {
-        vertical: 'bottom',
-        horizontal: 'right',
-      },
-      content: key => <SnackbarUpload id={key} />,
-    });
     if (!id) {
       return;
     }
@@ -106,6 +103,31 @@ export default function Form() {
     };
   }, [id]); // eslint-disable-line
 
+  const uploadFiles = useCallback(
+    async video => {
+      const files = fileFields
+        .filter(fileField => getvalues()[fileField])
+        .map(fileField => ({ fileField, file: getValues()[fileField] }));
+
+      if (!files.length) {
+        return;
+      }
+
+      dispatch(Creators.addUpload({ video, files }));
+
+      snackbar.enqueueSnackbar('', {
+        key: 'snackbar-upload',
+        persist: true,
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'right',
+        },
+        content: key => <SnackbarUpload id={key} />,
+      });
+    },
+    [dispatch, snackbar]
+  );
+
   const handleSubmit = useCallback(
     async data => {
       try {
@@ -116,7 +138,12 @@ export default function Form() {
           abortEarly: false,
         });
 
-        const sendData = omit(data, ['cast_members', 'genres', 'categories']);
+        const sendData = omit(data, [
+          ...fileFields,
+          'cast_members',
+          'genres',
+          'categories',
+        ]);
         sendData.genres_id = JSON.parse(data.genres).map(item => item.id);
         sendData.categories_id = JSON.parse(data.categories).map(
           item => item.id
@@ -127,17 +154,16 @@ export default function Form() {
 
         const http = !id
           ? await videoHttp.create(sendData)
-          : await videoHttp.update(
-              id,
-              { ...sendData, _method: 'PUT' },
-              { request: { usePost: true } }
-            );
+          : await videoHttp.update(id, sendData);
 
         http
-          .then(response => {
+          .then(async response => {
+            await uploadFiles(sendData);
+
             toast.success(
               `Vídeo ${id ? 'editado' : 'cadastrado'} com sucesso!`
             );
+
             if (formType === 'save') {
               history.push('/videos');
             }
@@ -175,7 +201,7 @@ export default function Form() {
         }
       }
     },
-    [formType, id]
+    [formType, id, uploadFiles]
   );
 
   return (
