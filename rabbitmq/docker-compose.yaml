@@ -17,5 +17,5 @@ services:
       - micro-catalog
 
 networks:
-  codeflix:
+  micro-catalog:
     driver: bridge

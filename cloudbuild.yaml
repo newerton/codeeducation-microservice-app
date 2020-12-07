@@ -1,18 +1,19 @@
 steps:
-  - id: "Criando o service account storage  json"
-    name: "gcr.io/cloud-builders/gcloud"
+  - id: "Criando o service account storage json"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
     args:
       - kms
       - encrypt
-      - --ciphertext-file=./storage/credentials/google/service-account-storage.json.enc
-      - --plaintext-file=./storage/credentials/google/service-account-storage.json
+      - --ciphertext-file=./backend/storage/credentials/google/service-account-storage.json.enc
+      - --plaintext-file=./backend/storage/credentials/google/service-account-storage.json
       - --location=global
       - --keyring=testing-lesson
       - --key=service-account
 
   - id: "Rodando docker-compose"
-    name: "gcr.io/$PROJECT_ID/docker-compose"
-    args: ["-f", "docker-compose.cloudbuild.yaml", "up", "-d"]
+    name: "gcr.io/$PROJECT_ID/docker-compose:1.24.0"
+    args: ["-f", "docker-compose.prod.yaml", "up", "-d"]
     env:
       - GOOGLE_CLOUD_PROJECT_ID=$PROJECT_ID
       - GOOGLE_CLOUD_KEY_FILE=service-account-storage.json
@@ -20,21 +21,40 @@ steps:
       - GOOGLE_CLOUD_STORAGE_API_URI=https://storage.cloud.google.com/codeeducation-micro-videos
       - TESTING_PROD=true
 
+  - id: "Chown in /var/www"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "exec",
+        "-u",
+        "root",
+        "-t",
+        "app",
+        "chown",
+        "-R",
+        "www-data:www-data",
+        "/var/www",
+      ]
+
   - id: "Rodando composer"
     name: "gcr.io/cloud-builders/docker"
-    args: ["exec", "-t", "app", "composer", "install"]
+    args: ["exec", "-t", "app", "composer", "install", "-d", "/var/www/backend"]
 
-  - id: "Copiando .env"
+  - id: "Copiando backend .env"
     name: "gcr.io/cloud-builders/docker"
-    args: ["exec", "-t", "app", "cp", ".env.example", ".env"]
+    args: ["exec", "-t", "app", "cp", "/var/www/backend/.env.example", "/var/www/backend/.env"]
+
+  - id: "Copiando backend .env.testing"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["exec", "-t", "app", "cp", "/var/www/backend/.env.testing.example", "/var/www/backend/.env.testing"]
 
   - id: "Rodando artisan key:generate"
     name: "gcr.io/cloud-builders/docker"
-    args: ["exec", "-t", "app", "php", "/var/www/artisan", "key:generate"]
+    args: ["exec", "-t", "app", "php", "/var/www/backend/artisan", "key:generate"]
 
   - id: "Rodando artisan migrate"
     name: "gcr.io/cloud-builders/docker"
-    args: ["exec", "-t", "app", "php", "/var/www/artisan", "migrate"]
+    args: ["exec", "-t", "app", "php", "/var/www/backend/artisan", "migrate"]
 
   - id: "Rodando PHPUnit"
     name: "gcr.io/cloud-builders/docker"
@@ -44,7 +64,23 @@ steps:
         "-t",
         "app",
         "php",
-        "/var/www/vendor/bin/phpunit",
+        "/var/www/backend/vendor/bin/phpunit",
         "-c",
-        "/var/www/phpunit.xml",
+        "/var/www/backend/phpunit.xml",
       ]
+
+  - id: "Copiando frontend .env"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["exec", "-t", "app", "cp", "/var/www/frontend/.env.example", "/var/www/frontend/.env"]
+
+  - id: "Install frontend"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["exec", "-t", "app", "npm", "install", "--prefix", "/var/www/frontend"]
+
+  - id: "Permission on scripts/build.sh"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["exec", "-t", "app", "chmod", "+x", "/var/www/frontend/scripts/build.sh"]
+  
+  - id: "Build frontend"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["exec", "-t", "app", "npm", "run", "build:laravel", "--prefix", "/var/www/frontend"]

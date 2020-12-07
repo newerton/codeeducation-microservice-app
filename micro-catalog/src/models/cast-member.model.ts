@@ -28,6 +28,9 @@ export class CastMember extends Entity {
   @property({
     type: 'number',
     required: true,
+    jsonSchema: {
+      enum: [CastMemberType.DIRECTOR, CastMemberType.ACTOR],
+    },
   })
   type: boolean;
 
