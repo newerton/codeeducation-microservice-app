@@ -32,7 +32,7 @@ return [
     /*
      * Matches the request origin. `[*]` allows all origins.
      */
-    'allowed_origins' => explode(',', $origins),
+    //'allowed_origins' => explode(',', $origins),
 
     /*
      * Matches the request origin with, similar to `Request::is()`
