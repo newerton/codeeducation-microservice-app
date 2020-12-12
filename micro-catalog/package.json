@@ -36,8 +36,8 @@
   "repository": {
     "type": "git"
   },
-  "author": "",
-  "license": "",
+  "author": "Newerton Vargas de Araujo <contact@newerton.com>",
+  "license": "MIT",
   "files": [
     "README.md",
     "index.js",

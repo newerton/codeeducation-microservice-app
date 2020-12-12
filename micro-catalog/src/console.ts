@@ -27,8 +27,10 @@ function showAvailableCommand() {
   console.log(chalk.green('Available command'));
   console.log('');
   for (const c of Object.keys(commands)) {
-    //@ts-ignore
-    console.log(`${commands[c].command}\t\t${commands[c].description}`);
+    console.log(
+      //@ts-ignore
+      ` - ${chalk.green(commands[c].command)}\t\t${commands[c].description}`,
+    );
   }
   console.log('');
   process.exit();

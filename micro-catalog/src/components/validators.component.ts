@@ -19,7 +19,7 @@ export class ValidatorsComponent implements Component {
       Binding.bind('ajv.keywords.exists')
         .to({
           name: 'exists',
-          validate: ([model, field]: Array<any>, value: any) => {
+          validate: async ([model, field]: Array<any>, value: any) => {
             const values = Array.isArray(value) ? value : [value];
             const repository = this.app.getSync<
               DefaultCrudRepository<any, any>
