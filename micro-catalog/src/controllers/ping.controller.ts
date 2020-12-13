@@ -1,4 +1,4 @@
-import {inject} from '@loopback/context';
+import {inject} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {get, Request, ResponseObject, RestBindings} from '@loopback/rest';
 import {CategoryRepository} from '../repositories';
@@ -48,16 +48,22 @@ export class PingController {
   ping(): object {
     // Reply with a greeting, the current time, the url, and request headers
     return {
-      greeting: 'Hello from LoopBack 4',
+      greeting: 'Hello from LoopBack 3',
       date: new Date(),
       url: this.req.url,
       headers: Object.assign({}, this.req.headers),
     };
   }
 
-  // Map to `GET /categories`
-  @get('/categories')
-  index() {
+  @get('/create-category')
+  async index() {
+    let _id = Math.random().toString(36).substring(7);
+    await this.categoryRepo.create({
+      id: _id,
+      name: 'My first category',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
     return this.categoryRepo.find();
   }
 }

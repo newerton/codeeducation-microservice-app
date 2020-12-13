@@ -1,6 +1,11 @@
 import {Entity, model, property} from '@loopback/repository';
 
-//@model({settings: {strict: false}})
+export interface SmallCategory {
+  id: string;
+  name: string;
+  is_active: boolean;
+}
+
 @model()
 export class Category extends Entity {
   @property({
@@ -16,7 +21,7 @@ export class Category extends Entity {
     required: true,
     jsonSchema: {
       minLength: 1,
-      maxLength: 255,
+      maxlength: 255,
     },
   })
   name: string;
@@ -27,6 +32,7 @@ export class Category extends Entity {
     jsonSchema: {
       nullable: true,
     },
+
     default: null,
   })
   description: string;

@@ -1,6 +1,7 @@
-import {DefaultCrudRepository} from '@loopback/repository';
+import {DefaultCrudRepository, EntityNotFoundError} from '@loopback/repository';
 import {Message} from 'amqplib';
 import {pick} from 'lodash';
+import {BaseRepository} from '../repositories/base.repository';
 import {ValidatorService} from './validator.service';
 
 export interface SyncOptions {
@@ -9,8 +10,18 @@ export interface SyncOptions {
   message: Message;
 }
 
+export interface SyncRelationOptions {
+  id: string;
+  repo: BaseRepository<any, any, any>;
+  relationIds: string[];
+  relationName: string;
+  relationRepo: DefaultCrudRepository<any, any>;
+  message: Message;
+}
+
 export abstract class BaseModelSyncService {
   constructor(public validateService: ValidatorService) {}
+
   protected async sync({repo, data, message}: SyncOptions) {
     const {id} = data || {};
     const action = this.getAction(message);
@@ -31,7 +42,6 @@ export abstract class BaseModelSyncService {
         break;
     }
   }
-
   protected getAction(message: Message) {
     return message.fields.routingKey.split('.')[2];
   }
@@ -56,5 +66,48 @@ export abstract class BaseModelSyncService {
       ...(exists && {options: {partial: true}}),
     });
     return exists ? repo.updateById(id, entity) : repo.create(entity);
+  }
+
+  async syncRelation({
+    id,
+    relationName,
+    repo,
+    relationIds,
+    relationRepo,
+    message,
+  }: SyncRelationOptions) {
+    const fieldsRelation = this.extractFieldsRelation(repo, relationName);
+    const collection = await relationRepo.find({
+      where: {
+        or: relationIds.map((idRelation) => ({id: idRelation})),
+      },
+      fields: fieldsRelation,
+    });
+
+    if (!collection.length) {
+      const error = new EntityNotFoundError(
+        relationRepo.entityClass,
+        relationIds,
+      );
+      error.name = 'EntityNotFound';
+      throw error;
+    }
+    const action = this.getAction(message);
+    if (action === 'attached') {
+      await repo.attachRelation(id, relationName, collection);
+    }
+  }
+
+  protected extractFieldsRelation(
+    repo: DefaultCrudRepository<any, any>,
+    relation: string,
+  ) {
+    return Object.keys(
+      repo.modelClass.definition.properties[relation].jsonSchema.items
+        .properties,
+    ).reduce((obj: any, field: string) => {
+      obj[field] = true;
+      return obj;
+    }, {});
   }
 }
