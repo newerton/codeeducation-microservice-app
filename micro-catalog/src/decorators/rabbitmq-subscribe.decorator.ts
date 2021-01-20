@@ -1,7 +1,7 @@
-import {MethodDecoratorFactory} from '@loopback/core';
+import {MethodDecoratorFactory} from '@loopback/metadata';
 import {Options} from 'amqplib';
 
-export interface RabbitmqSubscribeMetadata {
+export interface RabbitmqSubscribeMetada {
   exchange: string;
   routingKey: string | string[];
   queue?: string;
@@ -11,9 +11,9 @@ export interface RabbitmqSubscribeMetadata {
 export const RABBITMQ_SUBSCRIBE_DECORATOR = 'rabbitmq-subscribe-metadata';
 
 export function rabbitmqSubscribe(
-  spec: RabbitmqSubscribeMetadata,
+  spec: RabbitmqSubscribeMetada,
 ): MethodDecorator {
-  return MethodDecoratorFactory.createDecorator(
+  return MethodDecoratorFactory.createDecorator<RabbitmqSubscribeMetada>(
     RABBITMQ_SUBSCRIBE_DECORATOR,
     spec,
   );

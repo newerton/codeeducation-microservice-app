@@ -1,4 +1,5 @@
 import {
+  inject,
   lifeCycleObserver,
   LifeCycleObserver,
   ValueOrPromise,
@@ -7,12 +8,16 @@ import {juggler} from '@loopback/repository';
 import config from './esv7.datasource.config';
 
 @lifeCycleObserver('datasource')
-export class Esv7DataSource extends juggler.DataSource
+export class Esv7DataSource
+  extends juggler.DataSource
   implements LifeCycleObserver {
   static dataSourceName = 'esv7';
 
-  constructor() {
-    super(config);
+  constructor(
+    @inject('datasources.config.esv7', {optional: true})
+    dsConfig: object = config,
+  ) {
+    super(dsConfig);
   }
 
   /**

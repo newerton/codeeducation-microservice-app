@@ -1,1 +1,1 @@
-import './rabbitmq-subscribe.decorator';
+export * from './rabbitmq-subscribe.decorator';

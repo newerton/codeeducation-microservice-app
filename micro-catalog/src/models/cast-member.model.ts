@@ -20,19 +20,19 @@ export class CastMember extends Entity {
     required: true,
     jsonSchema: {
       minLength: 1,
-      maxLength: 255,
+      maxlength: 255,
     },
   })
   name: string;
 
   @property({
     type: 'number',
-    required: true,
+    required: false,
     jsonSchema: {
       enum: [CastMemberType.DIRECTOR, CastMemberType.ACTOR],
     },
   })
-  type: boolean;
+  type: number;
 
   @property({
     type: 'date',

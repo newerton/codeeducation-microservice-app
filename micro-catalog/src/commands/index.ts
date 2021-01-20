@@ -1,1 +1,1 @@
-export * from './fixtures.commands';
+export * from './fixtures.command'

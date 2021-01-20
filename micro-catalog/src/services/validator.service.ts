@@ -1,11 +1,8 @@
 import {bind, BindingScope, inject} from '@loopback/core';
+import {getModelSchemaRef} from '@loopback/openapi-v3';
 import {repository} from '@loopback/repository';
-import {
-  getModelSchemaRef,
-  RestBindings,
-  validateRequestBody,
-} from '@loopback/rest';
-import {CategoryRepository} from '../repositories/category.repository';
+import {AjvFactory, RestBindings, validateRequestBody} from '@loopback/rest';
+import {CategoryRepository} from '../repositories';
 
 interface ValidateOptions<T> {
   data: object;
@@ -19,7 +16,9 @@ export class ValidatorService {
   constructor(
     @repository(CategoryRepository) private repo: CategoryRepository,
     @inject(RestBindings.AJV_FACTORY) private ajvFactory: AjvFactory,
-  ) {}
+  ) {
+    //super()
+  }
 
   async validate<T extends object>({data, entityClass}: ValidateOptions<T>) {
     const modelSchema = getModelSchemaRef(entityClass);
@@ -28,14 +27,16 @@ export class ValidatorService {
       error.name = 'NotEntityClass';
       throw error;
     }
+
     const schemaRef = {$ref: modelSchema.$ref};
     const schemaName = Object.keys(modelSchema.definitions)[0];
 
+    // Cache Schema
     if (!this.cache.has(schemaName)) {
       this.cache.set(schemaName, modelSchema.definitions[schemaName]);
     }
 
-    const globaclSchemas = Array.from(this.cache).reduce<any>(
+    const globalSchemas = Array.from(this.cache).reduce<any>(
       (obj, [key, value]) => {
         obj[key] = value;
         return obj;
@@ -43,10 +44,12 @@ export class ValidatorService {
       {},
     );
 
+    console.log('globalSchemas', globalSchemas);
+
     await validateRequestBody(
       {value: data, schema: schemaRef},
       {required: true, content: {}},
-      globaclSchemas,
+      globalSchemas,
       {
         ajvFactory: this.ajvFactory,
       },

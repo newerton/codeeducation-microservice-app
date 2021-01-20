@@ -1,5 +1,6 @@
-import {Binding, Context, inject, MetadataInspector} from '@loopback/context';
+import {Binding, Context, inject} from '@loopback/context';
 import {Application, CoreBindings, Server} from '@loopback/core';
+import {MetadataInspector} from '@loopback/metadata';
 import {repository} from '@loopback/repository';
 import {
   AmqpConnectionManager,
@@ -9,9 +10,9 @@ import {
 } from 'amqp-connection-manager';
 import {Channel, ConfirmChannel, Message, Options} from 'amqplib';
 import {
-  RabbitmqSubscribeMetadata,
+  RabbitmqSubscribeMetada,
   RABBITMQ_SUBSCRIBE_DECORATOR,
-} from '../decorators/rabbitmq-subscribe.decorator';
+} from '../decorators';
 import {RabbitmqBindings} from '../keys';
 import {CategoryRepository} from '../repositories';
 
@@ -24,10 +25,12 @@ export enum ResponseEnum {
 export interface RabbitmqConfig {
   uri: string;
   connOptions?: AmqpConnectionManagerOptions;
-  exchanges?: {
+  exchanges?: {name: string; type: string; options?: Options.AssertExchange}[];
+  queues?: {
     name: string;
     type: string;
-    options?: Options.AssertExchange;
+    options?: Options.AssertQueue;
+    exchange?: {name: string; routingKey: string};
   }[];
   defaultHandlerError?: ResponseEnum;
 }
@@ -36,11 +39,11 @@ export class RabbitmqServer extends Context implements Server {
   private _listening: boolean;
   private _conn: AmqpConnectionManager;
   private _channelManager: ChannelWrapper;
-  channel: Channel;
+  private maxAttempts = 3;
 
   constructor(
     @inject(CoreBindings.APPLICATION_INSTANCE) public app: Application,
-    @repository(CategoryRepository) categoryRepo: CategoryRepository,
+    @repository(CategoryRepository) private categoryRepo: CategoryRepository,
     @inject(RabbitmqBindings.CONFIG) private config: RabbitmqConfig,
   ) {
     super(app);
@@ -51,32 +54,57 @@ export class RabbitmqServer extends Context implements Server {
     this._channelManager = this.conn.createChannel();
     this.channelManager.on('connect', () => {
       this._listening = true;
-      console.log('Successfully conencted a RabbitMQ channel');
+      console.log('Successfully connected a RabbitMq channel');
     });
+
     this.channelManager.on('error', (err, {name}) => {
       this._listening = false;
       console.log(
-        `Failed to setup a RabbitMQ channe - name: ${name} | error: ${err.message}`,
+        `Failed to setup RabbitMq channel - name ${name} | error: ${err.message}`,
       );
     });
-    await this.setupExchange();
+
+    await this.setupExchanges();
+    await this.setupQueues();
     await this.bindSubscribers();
+
+    //this.boot();
   }
 
-  private async setupExchange() {
+  private async setupExchanges() {
     return this.channelManager.addSetup(async (channel: ConfirmChannel) => {
       if (!this.config.exchanges) {
         return;
       }
-
       await Promise.all(
-        this.config.exchanges.map((exchange) =>
+        this.config.exchanges.map(async (exchange) =>
           channel.assertExchange(
             exchange.name,
             exchange.type,
             exchange.options,
           ),
         ),
+      );
+    });
+  }
+
+  private async setupQueues() {
+    return this.channelManager.addSetup(async (channel: ConfirmChannel) => {
+      if (!this.config.queues) {
+        return;
+      }
+      await Promise.all(
+        this.config.queues.map(async (queue) => {
+          await channel.assertQueue(queue.name, queue.options);
+          if (!queue.exchange) {
+            return;
+          }
+          await channel.bindQueue(
+            queue.name,
+            queue.exchange.name,
+            queue.exchange.routingKey,
+          );
+        }),
       );
     });
   }
@@ -111,15 +139,16 @@ export class RabbitmqServer extends Context implements Server {
 
   private getSubscribers(): {
     method: Function;
-    metadata: RabbitmqSubscribeMetadata;
+    metadata: RabbitmqSubscribeMetada;
   }[] {
     const bindings: Array<Readonly<Binding>> = this.find('services.*');
 
     return bindings
       .map((binding) => {
-        const metadata = MetadataInspector.getAllMethodMetadata<
-          RabbitmqSubscribeMetadata
-        >(RABBITMQ_SUBSCRIBE_DECORATOR, binding.valueConstructor?.prototype);
+        const metadata = MetadataInspector.getAllMethodMetadata<RabbitmqSubscribeMetada>(
+          RABBITMQ_SUBSCRIBE_DECORATOR,
+          binding.valueConstructor?.prototype,
+        );
         if (!metadata) {
           return [];
         }
@@ -128,8 +157,8 @@ export class RabbitmqServer extends Context implements Server {
           if (!Object.prototype.hasOwnProperty.call(metadata, methodName)) {
             return;
           }
-
           const service = this.getSync(binding.key) as any;
+
           methods.push({
             method: service[methodName].bind(service),
             metadata: metadata[methodName],
@@ -152,6 +181,7 @@ export class RabbitmqServer extends Context implements Server {
     queue: string;
     method: Function;
   }) {
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     await channel.consume(queue, async (message) => {
       try {
         if (!message) {
@@ -165,12 +195,15 @@ export class RabbitmqServer extends Context implements Server {
           } catch (e) {
             data = null;
           }
-
+          console.log('channel.consume', data);
           const responseType = await method({data, message, channel});
           this.dispatchResponse(channel, message, responseType);
         }
       } catch (e) {
-        console.error(e);
+        console.error(e, {
+          routingKey: message?.fields.routingKey,
+          content: message?.content.toString(),
+        });
         if (!message) {
           return;
         }
@@ -193,11 +226,36 @@ export class RabbitmqServer extends Context implements Server {
         channel.nack(message, false, true);
         break;
       case ResponseEnum.NACK:
-        channel.nack(message, false, false);
+        this.handleNack({channel, message});
         break;
       case ResponseEnum.ACK:
       default:
         channel.ack(message);
+    }
+  }
+
+  canDeadLetter({channel, message}: {channel: Channel; message: Message}) {
+    if (message.properties.headers && 'x-death' in message.properties.headers) {
+      const count = message.properties.headers['x-death']![0].count;
+      if (count >= this.maxAttempts) {
+        channel.ack(message);
+        const queue = message.properties.headers['x-death']![0].queue;
+        console.error(
+          `Ack in ${queue} with error. Max attempts exceeded: ${this.maxAttempts}`,
+        );
+        return false;
+      }
+    }
+    return true;
+  }
+
+  handleNack({channel, message}: {channel: Channel; message: Message}) {
+    const canDeadLetter = this.canDeadLetter({channel, message});
+    if (canDeadLetter) {
+      console.log('Nack in message', {content: message.content.toString()});
+      channel.nack(message, false, false);
+    } else {
+      channel.ack(message);
     }
   }
 

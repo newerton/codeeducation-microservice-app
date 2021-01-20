@@ -14,28 +14,29 @@ export class ValidatorsComponent implements Component {
   ) {
     this.bindings = this.validators();
   }
+
   validators() {
     return [
       Binding.bind('ajv.keywords.exists')
         .to({
           name: 'exists',
-          validate: ([model, field]: Array<any>, value: any) => {
+          validate: async ([model, field]: Array<any>, value: any) => {
             const values = Array.isArray(value) ? value : [value];
             const repository = this.app.getSync<
               DefaultCrudRepository<any, any>
             >(`repositories.${model}Repository`);
-            const rows = await repository.find({
+            const rows: any = repository.find({
               where: {
                 or: values.map((v) => ({[field]: v})),
               },
             });
-            if (rows.length !== values.length) {
-              const valuesNotExists = difference(
+            if (rows.length !== value.length) {
+              const valuesNotExist = difference(
                 values,
-                rows.map((r) => r[field]),
+                rows.map((r: any) => r[field]),
               );
-              const errors = valuesNotExists.map((v) => ({
-                message: `The valuie ${v} for ${model} not exists`,
+              const errors = valuesNotExist.map((v) => ({
+                message: `The value ${v} for ${model} not exists`,
               }));
               throw new ValidationError(errors as any);
             }
