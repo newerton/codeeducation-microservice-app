@@ -84,3 +84,7 @@ steps:
   - id: "Build frontend"
     name: "gcr.io/cloud-builders/docker"
     args: ["exec", "-t", "app", "npm", "run", "build:laravel", "--prefix", "/var/www/frontend"]
+
+  - id: "Test Laravel and React Integration"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["exec", "-w", "/var/www/backend", "-t", "app", "php", "artisan", "dusk", "--env=testing"]

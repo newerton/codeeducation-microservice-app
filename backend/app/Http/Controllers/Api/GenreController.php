@@ -6,11 +6,14 @@ use App\Http\Resources\GenreResource;
 use App\Models\Genre;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class GenreController extends BasicCrudController
 {
     private $rules = [
         'name' => 'required|max:255',
+        'description' => 'nullable',
         'is_active' => 'boolean',
         'categories_id' => 'required|array|exists:categories,id,deleted_at,NULL'
     ];
@@ -18,8 +21,8 @@ class GenreController extends BasicCrudController
     /**
      * @param Request $request
      * @return mixed
-     * @throws \Illuminate\Validation\ValidationException
-     * @throws \Throwable
+     * @throws ValidationException
+     * @throws Throwable
      */
     public function store(Request $request)
     {
@@ -51,9 +54,9 @@ class GenreController extends BasicCrudController
         return new $resource($obj);
     }
 
-    protected function handleRelations($video, Request $request)
+    protected function handleRelations(Genre $genre, Request $request)
     {
-        $video->categories()->sync($request->get('categories_id'));
+        $genre->categories()->sync($request->get('categories_id'));
     }
 
     protected function model()

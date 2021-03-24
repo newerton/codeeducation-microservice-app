@@ -73,10 +73,11 @@ class VideoController extends BasicCrudController
         );
     }
 
-    protected function handleRelations($video, Request $request)
+    protected function handleRelations(Video $video, Request $request)
     {
         $video->categories()->sync($request->get('categories_id'));
         $video->genres()->sync($request->get('genres_id'));
+        $video->castMembers()->sync($request->get('cast_members_id'));
     }
 
     protected function model()
@@ -107,11 +108,6 @@ class VideoController extends BasicCrudController
     protected function queryBuilder(): Builder
     {
         $action = \Route::getCurrentRoute()->getAction()['uses'];
-        return parent::queryBuilder()->with([
-            strpos($action, 'index') !== false
-                ? 'genres' : 'genres.categories',
-            'categories',
-            'castMembers'
-        ]);
+        return parent::queryBuilder()->with(['genres.categories', 'categories', 'castMembers']);
     }
 }
