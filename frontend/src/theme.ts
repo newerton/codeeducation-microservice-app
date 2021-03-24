@@ -46,7 +46,7 @@ const theme = createMuiTheme({
       },
     },
     MUIDataTableHeadCell: {
-      fixedHeaderCommon: {
+      fixedHeader: {
         paddingTop: 8,
         paddingBottom: 8,
         backgroundColor: (palette!.primary as SimplePaletteColorOptions).main,

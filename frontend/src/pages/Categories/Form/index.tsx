@@ -31,6 +31,7 @@ const Form = () => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
+      name: '',
       is_active: true,
     },
   });

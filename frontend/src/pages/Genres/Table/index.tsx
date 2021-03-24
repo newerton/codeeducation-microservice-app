@@ -123,7 +123,7 @@ const btnAdd = (
 
 const debounceTime = 300;
 const debouncedSearchTime = 300;
-const rowsPerPage = 15;
+const rowsPerPage = 10;
 const rowsPerPageOptions = [10, 25, 50];
 
 const Table = () => {

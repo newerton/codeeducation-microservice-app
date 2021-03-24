@@ -120,7 +120,7 @@ const Table = React.forwardRef<MuiDataTableRefComponent, TableProps>(
       const textLabels = (newProps.options as any).textLabels;
 
       textLabels.body.noMatch =
-        newProps.loading === true ? 'Caregando...' : textLabels.body.noMatch;
+        newProps.loading === true ? 'Carregando...' : textLabels.body.noMatch;
     }
 
     function applyResponsive() {
