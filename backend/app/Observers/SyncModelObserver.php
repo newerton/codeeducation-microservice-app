@@ -118,7 +118,7 @@ class SyncModelObserver
             'action' => $action,
             'exception' => $exception
             ) = $params;
-        $myException = new \Exception("The model {$modelName} with ID {$id} not synced on {$action}.", 0, $e);
+        $myException = new \Exception("The model {$modelName} with ID {$id} not synced on {$action}.", 0, $exception);
         report($myException);
     }
 }

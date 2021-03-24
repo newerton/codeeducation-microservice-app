@@ -4,9 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use EloquentFilter\Filterable;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
+use ReflectionException;
 
 abstract class BasicCrudController extends Controller
 {
@@ -43,7 +48,7 @@ abstract class BasicCrudController extends Controller
     /**
      * @param Request $request
      * @return mixed
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function index(Request $request)
     {
@@ -70,7 +75,7 @@ abstract class BasicCrudController extends Controller
     /**
      * @param Request $request
      * @return mixed
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function store(Request $request)
     {
@@ -83,7 +88,7 @@ abstract class BasicCrudController extends Controller
 
     /**
      * @param $id
-     * @return Builder|\Illuminate\Database\Eloquent\Model
+     * @return Builder|Model
      */
     protected function findOrFail($id)
     {
@@ -107,7 +112,7 @@ abstract class BasicCrudController extends Controller
      * @param Request $request
      * @param $id
      * @return mixed
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function update(Request $request, $id)
     {
@@ -123,8 +128,8 @@ abstract class BasicCrudController extends Controller
 
     /**
      * @param $id
-     * @return \Illuminate\Http\Response
-     * @throws \Exception
+     * @return Response
+     * @throws Exception
      */
     public function destroy($id)
     {
@@ -135,7 +140,7 @@ abstract class BasicCrudController extends Controller
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroyCollection(Request $request)
     {
@@ -165,6 +170,7 @@ abstract class BasicCrudController extends Controller
     /**
      * @param Request $request
      * @return array
+     * @throws ValidationException
      */
     protected function validateIds(Request $request)
     {

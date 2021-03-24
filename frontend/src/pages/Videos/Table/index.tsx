@@ -47,9 +47,6 @@ const columnsDefinition: TableColumn[] = [
     label: 'Gêneros',
     options: {
       filterType: 'multiselect',
-      filterOptions: {
-        names: [],
-      },
       customBodyRender(value: any) {
         return value.map((genre) => genre.name).join(', ');
       },
@@ -60,9 +57,6 @@ const columnsDefinition: TableColumn[] = [
     label: 'Categorias',
     options: {
       filterType: 'multiselect',
-      filterOptions: {
-        names: [],
-      },
       customBodyRender(value: any) {
         return value.map((category) => category.name).join(', ');
       },
@@ -124,7 +118,7 @@ const btnAdd = (
 
 const debounceTime = 300;
 const debouncedSearchTime = 300;
-const rowsPerPage = 15;
+const rowsPerPage = 10;
 const rowsPerPageOptions = [10, 25, 50];
 
 const Table = () => {

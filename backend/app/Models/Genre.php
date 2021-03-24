@@ -10,24 +10,30 @@ use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Class Genre
+ * @package App\Models
+ */
 class Genre extends Model
 {
     use SoftDeletes, Uuid, Filterable, SerializeDateToIso8601, HasBelongsToManyEvents;
 
+    public $incrementing = false;
+
+    protected $keyType = 'string';
     protected $fillable = ['name', 'is_active'];
     protected $dates = ['deleted_at'];
     protected $casts = [
         'id' => 'string',
         'is_active' => 'boolean'
     ];
-    public $incrementing = false;
     protected $observables = [
         'belongsToManyAttached'
     ];
 
     public function categories()
     {
-        return $this->belongsToMany(Category::class);
+        return $this->belongsToMany(Category::class)->withTrashed();
     }
 
     public function modelFilter()

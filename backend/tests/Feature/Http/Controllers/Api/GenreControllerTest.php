@@ -7,6 +7,7 @@ use App\Http\Resources\GenreResource;
 use App\Models\Category;
 use App\Models\Genre;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Arr;
 use Tests\TestCase;
 use Tests\Traits\MockController;
 use Tests\Traits\TestResources;
@@ -18,6 +19,7 @@ class GenreControllerTest extends TestCase
     use DatabaseMigrations, TestValidations, TestSaves, TestResources, MockController;
 
     private $genre;
+    private $sendData;
     private $serializedFields = [
         'id',
         'name',
@@ -128,6 +130,8 @@ class GenreControllerTest extends TestCase
     public function testSave()
     {
         $categoryId = factory(Category::class)->create()->id;
+        $testData = Arr::except($this->serializedFields, ['categories']);
+
         $data = [
             [
                 'send_data' => [
@@ -155,7 +159,7 @@ class GenreControllerTest extends TestCase
         foreach ($data as $test) {
             $response = $this->assertStore($test['send_data'], $test['test_data']);
             $response->assertJsonStructure([
-                'data' => $this->serializedFields
+                'data' => $testData
             ]);
             $this->assertResource($response, new GenreResource(Genre::find($response->json('data.id'))));
 

@@ -35,11 +35,14 @@ class BasicCrudControllerTest extends TestCase
     {
         /** @var CategoryStub $category */
         $category = CategoryStub::create(['name' => 'test_name', 'description' => 'test_description']);
-        $resource = $this->controller->index();
+        $request = \Mockery::mock(Request::class);
+        $request
+            ->shouldReceive('get', 'has')
+            ->once()
+            ->andReturn(['name' => 'test_name', 'description' => 'test_description']);
+        $resource = $this->controller->index($request);
         $serialized = $resource->response()->getData(true);
         $this->assertEquals([$category->toArray()], $serialized['data']);
-        $this->assertArrayHasKey('meta', $serialized);
-        $this->assertArrayHasKey('links', $serialized);
     }
 
     public function testStore()
@@ -78,8 +81,8 @@ class BasicCrudControllerTest extends TestCase
         $reflectionMethod = $reflectionClass->getMethod('findOrFail');
         $reflectionMethod->setAccessible(true);
 
-        $resource = $reflectionMethod->invokeArgs($this->controller, [$category->id]);
-        $this->assertInstanceOf(CategoryStub::class, $resource);
+        $result = $reflectionMethod->invokeArgs($this->controller, [$category->id]);
+        $this->assertInstanceOf(CategoryStub::class, $result);
     }
 
     public function testIfFindOrFailThrowExcepeetionWhenIdInvalid()
@@ -89,8 +92,8 @@ class BasicCrudControllerTest extends TestCase
         $reflectionMethod = $reflectionClass->getMethod('findOrFail');
         $reflectionMethod->setAccessible(true);
 
-        $resource = $reflectionMethod->invokeArgs($this->controller, [0]);
-        $this->assertInstanceOf(CategoryStub::class, $resource);
+        $result = $reflectionMethod->invokeArgs($this->controller, [0]);
+        $this->assertInstanceOf(CategoryStub::class, $result);
     }
 
     public function testShow()
@@ -111,7 +114,7 @@ class BasicCrudControllerTest extends TestCase
         $category = CategoryStub::create(['name' => 'test_name', 'description' => 'test_description']);
         $request = \Mockery::mock(Request::class);
         $request
-            ->shouldReceive('all')
+            ->shouldReceive('all', 'isMethod')
             ->once()
             ->andReturn(['name' => 'test_changed', 'description' => 'test_description_changed']);
         $resource = $this->controller->update($request, $category->id);

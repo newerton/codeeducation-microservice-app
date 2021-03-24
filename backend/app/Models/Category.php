@@ -9,9 +9,16 @@ use EloquentFilter\Filterable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Class Category
+ * @package App\Models
+ */
 class Category extends Model
 {
     use SoftDeletes, Uuid, Filterable, SerializeDateToIso8601;
+
+    public $incrementing = false;
+    public $keyType = 'string';
 
     protected $fillable = ['name', 'description', 'is_active'];
     protected $dates = ['deleted_at'];
@@ -19,7 +26,6 @@ class Category extends Model
         'id' => 'string',
         'is_active' => 'boolean'
     ];
-    public $incrementing = false;
 
     public function modelFilter()
     {

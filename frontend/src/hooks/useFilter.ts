@@ -287,7 +287,7 @@ export class FilterManager {
   resetFilter() {
     const INITIAL_STATE = {
       ...this.schema.cast({}),
-      search: { value: null, update: true },
+      search: null,
     } as State;
     this.dispatch(
       Creators.setReset({

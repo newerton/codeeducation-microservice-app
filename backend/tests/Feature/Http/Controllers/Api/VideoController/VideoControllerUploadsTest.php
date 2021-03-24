@@ -34,7 +34,7 @@ class VideoControllerUploadsTest extends BaseVideoControllerTestCase
         return route('videos.update', ['video' => $this->video->id]);
     }
 
-    public function testSaveWithFiles()
+    public function testStoreWithFiles()
     {
         \Storage::fake();
         $files = $this->getFiles();

@@ -3,6 +3,7 @@
 namespace Tests\Feature\Http\Controllers\Api\VideoController;
 
 use App\Http\Resources\VideoResource;
+use App\Models\CastMember;
 use App\Models\Category;
 use App\Models\Genre;
 use App\Models\Video;
@@ -48,6 +49,16 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
                 'id',
                 'name',
                 'is_active',
+                'created_at',
+                'updated_at',
+                'deleted_at',
+            ]
+        ],
+        'cast_members' => [
+            '*' => [
+                'id',
+                'name',
+                'type',
                 'created_at',
                 'updated_at',
                 'deleted_at',
@@ -111,7 +122,8 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
             'rating' => '',
             'duration' => '',
             'categories_id' => '',
-            'genres_id' => ''
+            'genres_id' => '',
+            'cast_members_id' => '',
         ];
         $this->assertInvalidationInStoreAction($data, 'required');
         $this->assertInvalidationInUpdateAction($data, 'required');
@@ -192,7 +204,8 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
      */
     public function testSaveWithoutFiles()
     {
-        $testData = Arr::except($this->sendData, ['categories_id', 'genres_id']);
+        $testData = Arr::except($this->sendData, ['categories_id', 'genres_id', 'cast_members_id']);
+        $testDataSerializedFields = Arr::except($this->serializedFields, ['categories', 'genres', 'cast_members']);
         $data = [
             [
                 'send_data' => $this->sendData,
@@ -207,12 +220,13 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
                 'test_data' => $testData + ['rating' => Video::RATING_LIST[1]],
             ]
         ];
+
         foreach ($data as $key => $value) {
             $response = $this->assertStore(
                 $value['send_data'],
                 $value['test_data'] + ['deleted_at' => null]
             );
-            $response->assertJsonStructure(['data' => $this->serializedFields]);
+            $response->assertJsonStructure(['data' => $testDataSerializedFields]);
             $this->assertResource($response, new VideoResource(Video::find($response->json('data.id'))));
 
             $response = $this->assertUpdate(
@@ -220,24 +234,27 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
                 $value['test_data'] + ['deleted_at' => null]
             );
             $response->assertJsonStructure(['data' => $this->serializedFields]);
-            $this->assertResource($response, new VideoResource(Video::find($response->json('data.id'))));
+            $videoResource = new VideoResource(Video::find($response->json('data.id')));
+            $this->assertResource($response, $videoResource);
         }
     }
 
     public function testSyncCategories()
     {
-        $testData = Arr::except($this->sendData, ['categories_id', 'genres_id']);
+        $testData = Arr::except($this->sendData, ['categories_id', 'genres_id', 'cast_members_id']);
 
         $categoriesId = factory(Category::class, 3)->create()->pluck('id')->toArray();
         $genre = factory(Genre::class)->create();
         $genre->categories()->sync($categoriesId);
         $genreId = $genre->id;
+        $castMemberId = factory(CastMember::class)->create()->id;
 
         $response = $this->json(
             'POST',
             $this->routeStore(),
-            $testData + ['genres_id' => [$genreId], 'categories_id' => [$categoriesId[0]]]
+            $testData + ['genres_id' => [$genreId], 'categories_id' => [$categoriesId[0]], 'cast_members_id' => [$castMemberId]]
         );
+
         $this->assertDatabaseHas('category_video', [
             'category_id' => $categoriesId[0],
             'video_id' => $response->json('data.id')
@@ -246,7 +263,7 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
         $response = $this->json(
             'PUT',
             route('videos.update', ['video' => $response->json('data.id')]),
-            $testData + ['genres_id' => [$genreId], 'categories_id' => [$categoriesId[1], $categoriesId[2]]]
+            $testData + ['genres_id' => [$genreId], 'categories_id' => [$categoriesId[1], $categoriesId[2]], 'cast_members_id' => [$castMemberId]]
         );
 
         $this->assertDatabaseMissing('category_video', [
@@ -265,7 +282,7 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
 
     public function testSyncGenres()
     {
-        $testData = Arr::except($this->sendData, ['categories_id', 'genres_id']);
+        $testData = Arr::except($this->sendData, ['categories_id', 'genres_id', 'cast_members_id']);
 
         /** @var Collection $genres */
         $genres = factory(Genre::class, 3)->create();
@@ -275,11 +292,12 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
             /** @var Genre $genre */
             $genre->categories()->sync($categoryId);
         });
+        $castMemberId = factory(CastMember::class)->create()->id;
 
         $response = $this->json(
             'POST',
             $this->routeStore(),
-            $testData + ['genres_id' => [$genresId[0]], 'categories_id' => [$categoryId]]
+            $testData + ['genres_id' => [$genresId[0]], 'categories_id' => [$categoryId], 'cast_members_id' => [$castMemberId]]
         );
         $this->assertDatabaseHas('genre_video', [
             'genre_id' => $genresId[0],
@@ -289,7 +307,7 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
         $response = $this->json(
             'PUT',
             route('videos.update', ['video' => $response->json('data.id')]),
-            $testData + ['genres_id' => [$genresId[1], $genresId[2]], 'categories_id' => [$categoryId]]
+            $testData + ['genres_id' => [$genresId[1], $genresId[2]], 'categories_id' => [$categoryId], 'cast_members_id' => [$castMemberId]]
         );
 
         $this->assertDatabaseMissing('genre_video', [
@@ -302,6 +320,51 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
         ]);
         $this->assertDatabaseHas('genre_video', [
             'genre_id' => $genresId[2],
+            'video_id' => $response->json('data.id')
+        ]);
+    }
+
+    public function testSyncCastMembers()
+    {
+        $testData = Arr::except($this->sendData, ['categories_id', 'genres_id', 'cast_members_id']);
+
+        /** @var Collection $genres */
+        $genres = factory(Genre::class, 3)->create();
+        $genresId = $genres->pluck('id')->toArray();
+        $categoryId = factory(Category::class)->create()->id;
+        $genres->each(function ($genre) use ($categoryId) {
+            /** @var Genre $genre */
+            $genre->categories()->sync($categoryId);
+        });
+        $castMembers = factory(CastMember::class, 3)->create();
+        $castMembersId = $castMembers->pluck('id')->toArray();
+
+        $response = $this->json(
+            'POST',
+            $this->routeStore(),
+            $testData + ['genres_id' => [$genresId[0]], 'categories_id' => [$categoryId], 'cast_members_id' => [$castMembersId[0]]]
+        );
+        $this->assertDatabaseHas('cast_member_video', [
+            'cast_member_id' => $castMembersId[0],
+            'video_id' => $response->json('data.id')
+        ]);
+
+        $response = $this->json(
+            'PUT',
+            route('videos.update', ['video' => $response->json('data.id')]),
+            $testData + ['genres_id' => [$genresId[1], $genresId[2]], 'categories_id' => [$categoryId], 'cast_members_id' => [$castMembersId[1], $castMembersId[2]]]
+        );
+
+        $this->assertDatabaseMissing('cast_member_video', [
+            'cast_member_id' => $castMembersId[0],
+            'video_id' => $response->json('data.id')
+        ]);
+        $this->assertDatabaseHas('cast_member_video', [
+            'cast_member_id' => $castMembersId[1],
+            'video_id' => $response->json('data.id')
+        ]);
+        $this->assertDatabaseHas('cast_member_video', [
+            'cast_member_id' => $castMembersId[2],
             'video_id' => $response->json('data.id')
         ]);
     }

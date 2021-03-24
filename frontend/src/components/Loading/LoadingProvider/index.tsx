@@ -1,7 +1,6 @@
 import React from 'react';
 import { useState, useMemo, useEffect } from 'react';
 import LoadingContext from '../LoadingContext';
-import { omit } from 'lodash';
 import {
   addGlobalRequestInterceptor,
   addGlobalResponseInterceptor,
@@ -16,23 +15,22 @@ const LoadingProvider: React.FC = ({ children }) => {
   useMemo(() => {
     let isSubscribed = true;
     const requestIds = addGlobalRequestInterceptor((config) => {
-      if (isSubscribed && !config.headers.hasOwnProperty('ignoreLoading')) {
+      if (isSubscribed && !config.headers.hasOwnProperty('x-ignore-loading')) {
         setLoading(true);
         setCountRequest((prevCountRequest) => prevCountRequest + 1);
       }
-      config.headers = omit(config.headers, 'ignoreLoading');
       return config;
     });
 
     const responseIds = addGlobalResponseInterceptor(
       (response) => {
-        if (isSubscribed) {
+        if (isSubscribed && !response.config.headers.hasOwnProperty('x-ignore-loading')) {
           decrementCountRequest();
         }
         return response;
       },
       (error) => {
-        if (isSubscribed) {
+        if (isSubscribed && !error.config.headers.hasOwnProperty('x-ignore-loading')) {
           decrementCountRequest();
         }
         return Promise.reject(error);
