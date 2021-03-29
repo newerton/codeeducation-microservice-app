@@ -205,7 +205,6 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
     public function testSaveWithoutFiles()
     {
         $testData = Arr::except($this->sendData, ['categories_id', 'genres_id', 'cast_members_id']);
-        $testDataSerializedFields = Arr::except($this->serializedFields, ['categories', 'genres', 'cast_members']);
         $data = [
             [
                 'send_data' => $this->sendData,
@@ -226,7 +225,7 @@ class VideoControllerCrudTest extends BaseVideoControllerTestCase
                 $value['send_data'],
                 $value['test_data'] + ['deleted_at' => null]
             );
-            $response->assertJsonStructure(['data' => $testDataSerializedFields]);
+            $response->assertJsonStructure(['data' => $this->serializedFields]);
             $this->assertResource($response, new VideoResource(Video::find($response->json('data.id'))));
 
             $response = $this->assertUpdate(

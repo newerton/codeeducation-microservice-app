@@ -35,6 +35,7 @@ class GenreController extends BasicCrudController
             return $obj;
         });
         $obj->refresh();
+        $obj->load('categories');
         $resource = $this->resource();
         return new $resource($obj);
     }
