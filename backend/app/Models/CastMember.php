@@ -26,6 +26,7 @@ class CastMember extends Model
         'id' => 'string',
         'type' => 'integer'
     ];
+    protected $hidden = ['pivot'];
     public $incrementing = false;
 
     public function modelFilter()
