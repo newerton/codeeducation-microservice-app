@@ -15,7 +15,7 @@ services:
       - ./.docker/php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
     networks:
       - app-network
-      - rabbitmq_micro-catalog
+      - codeeducation-microservice-catalog-rabbitmq_micro-catalog
     depends_on:
       - db
       - redis
@@ -37,7 +37,7 @@ services:
       - .:/var/www
     networks:
       - app-network
-      - rabbitmq_micro-catalog
+      - codeeducation-microservice-catalog-rabbitmq_micro-catalog
     depends_on:
       - app
 
@@ -76,5 +76,5 @@ services:
 networks:
   app-network:
     driver: bridge
-  rabbitmq_micro-catalog:
+  codeeducation-microservice-catalog-rabbitmq_micro-catalog:
     external: true
