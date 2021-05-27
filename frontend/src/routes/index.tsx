@@ -13,6 +13,7 @@ import CastMembersList from '../pages/CastMembers/List';
 import CategoriesForm from '../pages/Categories/Form';
 import CategoriesList from '../pages/Categories/List';
 import Dashboard from '../pages/Dashboard';
+import Login from '../pages/Login';
 import GenresForm from '../pages/Genres/Form';
 import GenresList from '../pages/Genres/List';
 import UploadsList from '../pages/Uploads/List';
@@ -28,9 +29,18 @@ export interface MyRouteProps extends RouteProps {
   path: string;
   component: any;
   exact: boolean;
+  auth?: boolean;
 }
 
 const routes: MyRouteProps[] = [
+  {
+    name: 'login',
+    label: 'Login',
+    icon: <DashboardRounded />,
+    path: '/login',
+    component: Login,
+    exact: true,
+  },
   {
     name: 'dashboard',
     label: 'Dashboard',
@@ -38,6 +48,7 @@ const routes: MyRouteProps[] = [
     path: '/',
     component: Dashboard,
     exact: true,
+    auth: true,
   },
   // Categorias
   {
@@ -47,6 +58,7 @@ const routes: MyRouteProps[] = [
     path: '/categories',
     component: CategoriesList,
     exact: true,
+    auth: true,
   },
   {
     name: 'categories.create',

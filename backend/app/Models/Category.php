@@ -26,6 +26,7 @@ class Category extends Model
         'id' => 'string',
         'is_active' => 'boolean'
     ];
+    protected $hidden = ['pivot'];
 
     public function modelFilter()
     {

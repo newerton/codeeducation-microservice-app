@@ -24,3 +24,6 @@ yarn-error.log*
 
 #history plugin
 /.history
+
+#lock files
+yarn.lock

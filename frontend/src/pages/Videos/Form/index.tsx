@@ -174,7 +174,6 @@ const Form = () => {
       const files: FileInfo[] = fileFields
         .filter((fileField) => getValues()[fileField])
         .map((fileField) => ({ fileField, file: getValues()[fileField] }));
-      console.log(files);
       if (!files.length) {
         return;
       }

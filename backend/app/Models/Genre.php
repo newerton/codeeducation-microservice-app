@@ -30,6 +30,7 @@ class Genre extends Model
     protected $observables = [
         'belongsToManyAttached'
     ];
+    protected $hidden = ['pivot'];
 
     public function categories()
     {

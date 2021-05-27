@@ -103,6 +103,11 @@ const theme = createMuiTheme({
         color: (palette!.primary as SimplePaletteColorOptions).main,
       },
     },
+    MuiTypography: {
+      colorTextSecondary: {
+        color: 'rgba(0, 0, 0, 0.87)',
+      },
+    },
   },
 });
 
