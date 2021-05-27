@@ -1,5 +1,6 @@
 /.docker/mysql/dbdata/*
 .idea/
+.history/
 .vscode/
 .npm-cache/
 .yarn-cache/

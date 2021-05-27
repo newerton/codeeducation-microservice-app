@@ -3,14 +3,17 @@ import { Link } from 'react-router-dom';
 
 import {
   SwipeableDrawer,
+  Link as MuiLink,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
+  Divider,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import routes from '../../../routes';
 import { MyRouteProps } from '../../../routes';
+import { People } from '@material-ui/icons';
 
 interface DrawerProps {
   open: boolean;
@@ -41,12 +44,7 @@ const menuRoutes = routes.filter((route) => listRoutes.includes(route.name));
 const Drawer: React.FC<DrawerProps> = ({ open, toggleDrawer }) => {
   const classes = useStyles();
   const drawer = (
-    <div
-      className={classes.list}
-      role="presentation"
-      onClick={toggleDrawer}
-      onKeyDown={toggleDrawer}
-    >
+    <div className={classes.list} role="presentation" onKeyDown={toggleDrawer}>
       <List>
         {listRoutes.map((routeName, key) => {
           const route: MyRouteProps | undefined = menuRoutes.find(
@@ -54,7 +52,13 @@ const Drawer: React.FC<DrawerProps> = ({ open, toggleDrawer }) => {
           );
           if (route) {
             return (
-              <ListItem button key={key} component={Link} to={route.path}>
+              <ListItem
+                button
+                key={key}
+                component={Link}
+                to={route.path}
+                onClick={toggleDrawer}
+              >
                 <ListItemIcon>{route.icon}</ListItemIcon>
                 <ListItemText primary={route.label} />
               </ListItem>
@@ -62,6 +66,21 @@ const Drawer: React.FC<DrawerProps> = ({ open, toggleDrawer }) => {
           }
           return '';
         })}
+        <Divider />
+        <ListItem
+          button
+          component={MuiLink}
+          href="http://"
+          color={'textSecondary'}
+          rel="noopener"
+          target="_blank"
+          onClick={toggleDrawer}
+        >
+          <ListItemIcon>
+            <People />
+          </ListItemIcon>
+          <ListItemText primary="Usuários" />
+        </ListItem>
       </List>
     </div>
   );

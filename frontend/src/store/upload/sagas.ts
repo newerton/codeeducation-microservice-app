@@ -16,13 +16,10 @@ export function* uploadWatcherSaga() {
           video: payload.video,
           fileInfo: fileInfo,
         });
-        console.log(response);
       } catch (e) {
         console.log(e);
       }
     }
-
-    console.log(payload);
   }
 }
 
