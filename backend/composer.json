@@ -18,7 +18,9 @@
         "laravel/helpers": "^1.1",
         "laravel/tinker": "^1.0",
         "superbalist/laravel-google-cloud-storage": "^2.2",
-        "tucker-eric/eloquentfilter": "^2.2"
+        "tucker-eric/eloquentfilter": "^2.2",
+        "tymon/jwt-auth": "^1.0",
+        "vizir/laravel-keycloak-web-guard": "^2.3"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.6",
