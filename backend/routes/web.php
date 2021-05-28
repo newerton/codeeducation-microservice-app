@@ -15,6 +15,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/backend/{react?}', function ($react = null) {
-    return view('admin-frontend.index');
-})->where('react', '.*');
+Route::middleware('auth')->group(function () {
+    Route::get('/backend/{react?}', function ($react = null) {
+        return view('admin-frontend.index');
+    })->where('react', '.*');
+});
