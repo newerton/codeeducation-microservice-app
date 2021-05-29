@@ -11,13 +11,32 @@ class User implements Authenticatable
     protected $name;
     protected $email;
     protected $token;
+    protected $roles;
 
-    public function __construct(string $id, string $name, string $email, string $token)
+    public function __construct(string $id, string $name, string $email, string $token, array $roles)
     {
         $this->id = $id;
         $this->name = $name;
         $this->email = $email;
         $this->token = $token;
+        $this->roles = $roles;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRoles(): array
+    {
+        return $this->roles;
+    }
+
+    /**
+     * @param $role
+     * @return bool
+     */
+    public function hasRole($role): bool
+    {
+        return in_array($role, $this->roles);
     }
 
     /**

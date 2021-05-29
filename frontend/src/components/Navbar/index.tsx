@@ -8,14 +8,16 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Link,
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 
 import logo from '../../static/logo.png';
 
 import Drawer from './Drawer';
-import { useKeycloak } from '@react-keycloak/web';
 import { AccountCircle } from '@material-ui/icons';
+import { useHasClient, useHasRealmRole } from '../../hooks/useHasRealmRole';
+import { keycloakLinks } from '../../util/auth';
 
 // import { Container } from './styles';
 const useStyles = makeStyles((theme) => ({
@@ -41,11 +43,12 @@ const Navbar: React.FC = () => {
   const classes = useStyles();
   const [state, setState] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const { keycloak, initialized } = useKeycloak();
+  const hasCatalogAdmin = useHasRealmRole('catalog-admin');
+  const hasAdminRealm = useHasClient('realm-management');
 
   const isMenuOpen = Boolean(anchorEl);
 
-  if (!initialized || !keycloak.authenticated) {
+  if (!hasCatalogAdmin) {
     return null;
   }
 
@@ -72,7 +75,26 @@ const Navbar: React.FC = () => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      {hasAdminRealm && (
+        <MenuItem
+          component={Link}
+          href={keycloakLinks.adminConsole}
+          target="_blank"
+          rel="noopener"
+          onClick={handleMenuClose}
+        >
+          Admin account
+        </MenuItem>
+      )}
+      <MenuItem
+        component={Link}
+        href={keycloakLinks.accountConsole}
+        target="_blank"
+        rel="noopener"
+        onClick={handleMenuClose}
+      >
+        My account
+      </MenuItem>
       <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
     </Menu>
   );
