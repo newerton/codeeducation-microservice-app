@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,7 +11,10 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::group(['namespace' => 'Api', 'middleware' => 'auth:api'], function () {
+Route::group(['namespace' => 'Api', 'middleware' => [
+    'auth:api',
+    'can:catalog-admin'
+]], function () {
     $exceptConfig = ['except' => ['create', 'edit']];
 
     Route::resource('categories', 'CategoryController', $exceptConfig);
