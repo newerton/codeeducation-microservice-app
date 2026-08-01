@@ -1,17 +1,16 @@
-import { useSnackbar } from 'notistack';
-import React, { useContext, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers';
+import { MenuItem, TextField } from '@material-ui/core';
+import { useSnackbar } from 'notistack';
+import { useContext, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useHistory, useParams } from 'react-router';
-
 import * as Yup from 'yup';
 import DefaultForm from '../../../components/DefaultForm';
+import FormButtons from '../../../components/FormButtons';
 import LoadingContext from '../../../components/Loading/LoadingContext';
-import { Category, Genre } from '../../../util/models';
 import categoryHttp from '../../../util/http/category-http';
 import genreHttp from '../../../util/http/genre-http';
-import { MenuItem, TextField } from '@material-ui/core';
-import FormButtons from '../../../components/FormButtons';
+import type { Category, Genre } from '../../../util/models';
 
 const schema = Yup.object().shape({
   name: Yup.string().required('O nome é obrigatório'),
@@ -86,7 +85,7 @@ const Form = () => {
     };
   }, [id, enqueueSnackbar, reset]);
 
-  const onSubmit = async (formData, event) => {
+  const onSubmit = async (formData, _event) => {
     try {
       const http = !genre
         ? genreHttp.create(formData)
@@ -137,7 +136,7 @@ const Form = () => {
           disabled={loading}
           inputRef={register}
           error={errors.name !== undefined}
-          helperText={errors.name && errors.name.message}
+          helperText={errors.name?.message}
           InputLabelProps={{ shrink: true }}
         />
 
@@ -155,7 +154,7 @@ const Form = () => {
           onChange={handleChange}
           disabled={loading}
           error={errors.categories_id !== undefined}
-          helperText={errors.categories_id && errors.categories_id.message}
+          helperText={errors.categories_id?.message}
           InputLabelProps={{ shrink: true }}
         >
           {categories.map((category: Category) => (

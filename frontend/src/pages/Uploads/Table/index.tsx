@@ -1,23 +1,23 @@
-import React from 'react';
 import {
-  makeStyles,
-  Theme,
   Card,
   CardContent,
+  Divider,
   ExpansionPanel,
-  ExpansionPanelSummary,
-  Typography,
   ExpansionPanelDetails,
+  ExpansionPanelSummary,
   Grid,
   List,
-  Divider,
+  type Theme,
+  Typography,
+  makeStyles,
 } from '@material-ui/core';
-import UploadItem from './UploadItem';
-import Page from '../../../components/Page';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import React from 'react';
 import { useSelector } from 'react-redux';
-import { UploadModule, Upload } from '../../../store/upload/types';
+import Page from '../../../components/Page';
+import type { Upload, UploadModule } from '../../../store/upload/types';
 import { VideoFileFieldsMaps } from '../../../util/models';
+import UploadItem from './UploadItem';
 
 const useStyles = makeStyles((theme: Theme) => {
   return {

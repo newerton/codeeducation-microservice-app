@@ -1,5 +1,5 @@
 import { createMuiTheme } from '@material-ui/core';
-import {
+import type {
   PaletteOptions,
   SimplePaletteColorOptions,
 } from '@material-ui/core/styles/createPalette';
@@ -30,18 +30,18 @@ const theme = createMuiTheme({
     MUIDataTableTooblar: {
       root: {
         minHeight: '58px',
-        backgroundColor: palette!.background!.default,
+        backgroundColor: palette?.background?.default,
       },
       icon: {
-        color: (palette!.primary as SimplePaletteColorOptions).main,
+        color: (palette?.primary as SimplePaletteColorOptions).main,
         '&:hover, &:active, &.focus': {
-          color: (palette!.primary as SimplePaletteColorOptions).dark,
+          color: (palette?.primary as SimplePaletteColorOptions).dark,
         },
       },
       iconActive: {
-        color: (palette!.primary as SimplePaletteColorOptions).dark,
+        color: (palette?.primary as SimplePaletteColorOptions).dark,
         '&:hover, &:active, &.focus': {
-          color: (palette!.primary as SimplePaletteColorOptions).dark,
+          color: (palette?.primary as SimplePaletteColorOptions).dark,
         },
       },
     },
@@ -49,7 +49,7 @@ const theme = createMuiTheme({
       fixedHeader: {
         paddingTop: 8,
         paddingBottom: 8,
-        backgroundColor: (palette!.primary as SimplePaletteColorOptions).main,
+        backgroundColor: (palette?.primary as SimplePaletteColorOptions).main,
         color: '#fff',
         '&[aria-sort]': {
           backgroundColor: '#459ac4',
@@ -69,7 +69,7 @@ const theme = createMuiTheme({
     },
     MUIDataTableSelectCell: {
       headerCell: {
-        backgroundColor: (palette!.primary as SimplePaletteColorOptions).main,
+        backgroundColor: (palette?.primary as SimplePaletteColorOptions).main,
         '& span': {
           color: '#fff !important',
         },
@@ -77,30 +77,30 @@ const theme = createMuiTheme({
     },
     MUIDataTableBodyCell: {
       root: {
-        color: (palette!.secondary as SimplePaletteColorOptions).main,
+        color: (palette?.secondary as SimplePaletteColorOptions).main,
         '&:hover, &:active, &.focus': {
-          color: (palette!.secondary as SimplePaletteColorOptions).main,
+          color: (palette?.secondary as SimplePaletteColorOptions).main,
         },
       },
     },
     MUIDataTableToolbarSelect: {
       title: {
-        color: (palette!.primary as SimplePaletteColorOptions).main,
+        color: (palette?.primary as SimplePaletteColorOptions).main,
       },
       iconButton: {
-        color: (palette!.primary as SimplePaletteColorOptions).main,
+        color: (palette?.primary as SimplePaletteColorOptions).main,
       },
     },
     MUIDataTableBodyRow: {
       root: {
         '&:nth-child(odd)': {
-          backgroundColor: palette!.background!.default,
+          backgroundColor: palette?.background?.default,
         },
       },
     },
     MUIDataTablePagination: {
       root: {
-        color: (palette!.primary as SimplePaletteColorOptions).main,
+        color: (palette?.primary as SimplePaletteColorOptions).main,
       },
     },
     MuiTypography: {

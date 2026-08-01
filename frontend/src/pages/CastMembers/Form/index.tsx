@@ -1,14 +1,4 @@
-import { useSnackbar } from 'notistack';
-import React, { useContext, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers';
-import { useHistory, useParams } from 'react-router';
-
-import * as Yup from 'yup';
-import castMemberHttp from '../../../util/http/cast-member-http';
-import { CastMember } from '../../../util/models';
-import DefaultForm from '../../../components/DefaultForm';
-
 import {
   FormControl,
   FormControlLabel,
@@ -18,8 +8,16 @@ import {
   RadioGroup,
   TextField,
 } from '@material-ui/core';
+import { useSnackbar } from 'notistack';
+import { useContext, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useHistory, useParams } from 'react-router';
+import * as Yup from 'yup';
+import DefaultForm from '../../../components/DefaultForm';
 import FormButtons from '../../../components/FormButtons';
 import LoadingContext from '../../../components/Loading/LoadingContext';
+import castMemberHttp from '../../../util/http/cast-member-http';
+import type { CastMember } from '../../../util/models';
 
 const schema = Yup.object().shape({
   name: Yup.string().label('Nome').required().max(255),
@@ -80,9 +78,9 @@ const Form = () => {
   }, [id, reset, enqueueSnackbar]);
 
   const handleChange = (event) =>
-    setValue('type', parseInt(event.target.value));
+    setValue('type', parseInt(event.target.value, 10));
 
-  const onSubmit = async (formData, event) => {
+  const onSubmit = async (formData, _event) => {
     try {
       const http = !castMember
         ? castMemberHttp.create(formData)
@@ -133,7 +131,7 @@ const Form = () => {
           disabled={loading}
           inputRef={register}
           error={errors.name !== undefined}
-          helperText={errors.name && errors.name.message}
+          helperText={errors.name?.message}
           InputLabelProps={{ shrink: true }}
         />
         <FormControl
@@ -147,7 +145,7 @@ const Form = () => {
             aria-label="type"
             name="type"
             onChange={handleChange}
-            value={watch('type') + ''}
+            value={`${watch('type')}`}
           >
             <FormControlLabel value="1" label="Diretor" control={<Radio />} />
             <FormControlLabel value="2" label="Ator" control={<Radio />} />

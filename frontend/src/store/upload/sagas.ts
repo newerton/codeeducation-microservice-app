@@ -1,9 +1,9 @@
-import { Types, Creators } from './index';
-import { eventChannel, END } from 'redux-saga';
-import { actionChannel, take, call, put } from 'redux-saga/effects';
-import { AddUploadAction, FileInfo } from './types';
-import { Video } from '../../util/models';
+import { END, eventChannel } from 'redux-saga';
+import { actionChannel, call, put, take } from 'redux-saga/effects';
 import videoHttp from '../../util/http/video-http';
+import type { Video } from '../../util/models';
+import { Creators, Types } from './index';
+import type { AddUploadAction, FileInfo } from './types';
 
 export function* uploadWatcherSaga() {
   const newFilesChannel = yield actionChannel(Types.ADD_UPLOAD);
@@ -16,7 +16,7 @@ export function* uploadWatcherSaga() {
           video: payload.video,
           fileInfo: fileInfo,
         });
-        console.log(response)
+        console.log(response);
       } catch (e) {
         console.log(e);
       }
@@ -44,7 +44,7 @@ function* uploadFile({
           video,
           fileField: fileInfo.fileField,
           progress,
-        })
+        }),
       );
     } catch (e) {
       yield put(
@@ -52,7 +52,7 @@ function* uploadFile({
           video,
           fileField: fileInfo.fileField,
           error: e,
-        })
+        }),
       );
       throw e;
     }
@@ -83,7 +83,7 @@ function sendUpload({ id, fileInfo }: { id: string; fileInfo: FileInfo }) {
               }
             },
           },
-        }
+        },
       )
       .then((response) => emitter({ response }))
       .catch((error) => emitter(error))

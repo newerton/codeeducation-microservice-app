@@ -1,5 +1,5 @@
-import * as Typings from './types';
 import { createActions, createReducer } from 'reduxsauce';
+import type * as Typings from './types';
 
 export const { Types, Creators } = createActions<
   {
@@ -114,7 +114,7 @@ function setOrder(
 }
 
 function setReset(
-  state = INITIAL_STATE,
+  _state = INITIAL_STATE,
   action: Typings.SetResetAction,
 ): Typings.State {
   return action.payload.state;

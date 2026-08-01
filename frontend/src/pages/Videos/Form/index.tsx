@@ -1,15 +1,4 @@
-import React, {
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-  createRef,
-  MutableRefObject,
-} from 'react';
-import { useDispatch } from 'react-redux';
-import { useHistory, useParams } from 'react-router';
-
+import { yupResolver } from '@hookform/resolvers';
 import {
   Card,
   CardContent,
@@ -20,27 +9,39 @@ import {
   Typography,
   useMediaQuery,
 } from '@material-ui/core';
-import { makeStyles, Theme, useTheme } from '@material-ui/core/styles';
+import { type Theme, makeStyles, useTheme } from '@material-ui/core/styles';
 import { omit, zipObject } from 'lodash';
 import { useSnackbar } from 'notistack';
-import FormButtons from '../../../components/FormButtons';
-import DefaultForm from '../../../components/DefaultForm';
+import {
+  type MutableRefObject,
+  createRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers';
-import { schemaValidations } from './schemaValidations';
-import useSnackbarFormError from '../../../hooks/useSnackbarFormError';
-import { Video, VideoFileFieldsMaps } from '../../../util/models';
+import { useDispatch } from 'react-redux';
+import { useHistory, useParams } from 'react-router';
+import DefaultForm from '../../../components/DefaultForm';
+import FormButtons from '../../../components/FormButtons';
+import type { InputFileComponent } from '../../../components/InputFile';
 import LoadingContext from '../../../components/Loading/LoadingContext';
-import { InputFileComponent } from '../../../components/InputFile';
-import CastMemberField, { CastMemberFieldComponent } from './CastMemberField';
-import CategoryField, { CategoryFieldComponent } from './CategoryField';
-import GenreField, { GenreFieldComponent } from './GenreField';
-import videoHttp from '../../../util/http/video-http';
-import { Creators } from '../../../store/upload';
 import SnackbarUpload from '../../../components/SnackbarUpload';
-import { FileInfo } from '../../../store/upload/types';
-import RatingField from './RatingField';
 import UploadField from '../../../components/UploadField';
+import useSnackbarFormError from '../../../hooks/useSnackbarFormError';
+import { Creators } from '../../../store/upload';
+import type { FileInfo } from '../../../store/upload/types';
+import videoHttp from '../../../util/http/video-http';
+import { type Video, VideoFileFieldsMaps } from '../../../util/models';
+import CastMemberField, {
+  type CastMemberFieldComponent,
+} from './CastMemberField';
+import CategoryField, { type CategoryFieldComponent } from './CategoryField';
+import GenreField, { type GenreFieldComponent } from './GenreField';
+import RatingField from './RatingField';
+import { schemaValidations } from './schemaValidations';
 
 const fileFields = Object.keys(VideoFileFieldsMaps);
 
@@ -55,7 +56,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: '#f5f5f5',
   },
   cardContentOpened: {
-    paddingBottom: theme.spacing(2) + 'px !important',
+    paddingBottom: `${theme.spacing(2)}px !important`,
   },
 }));
 
@@ -121,12 +122,12 @@ const Form = () => {
       Object.keys(uploadsRef.current).forEach((field) =>
         uploadsRef.current[field].current.clear(),
       );
-      castMemberRef.current && castMemberRef.current.clear();
-      categoryRef.current && categoryRef.current.clear();
-      genreRef.current && genreRef.current.clear();
+      castMemberRef.current?.clear();
+      categoryRef.current?.clear();
+      genreRef.current?.clear();
       reset(data);
     },
-    [castMemberRef, categoryRef, genreRef, reset, uploadsRef],
+    [reset],
   );
 
   useEffect(() => {
@@ -187,7 +188,7 @@ const Form = () => {
           vertical: 'bottom',
           horizontal: 'right',
         },
-        content: (key, message) => {
+        content: (key, _message) => {
           const id = key as any;
           return <SnackbarUpload id={id} />;
         },
@@ -196,7 +197,7 @@ const Form = () => {
     [dispatch, enqueueSnackbar, getValues],
   );
 
-  const onSubmit = async (formData, event) => {
+  const onSubmit = async (formData, _event) => {
     const sendData = omit(formData, [
       ...fileFields,
       'cast_members',
@@ -252,9 +253,7 @@ const Form = () => {
   return (
     <>
       <h1>{!id ? 'Adicionar um novo' : 'Editar'} vídeo</h1>
-      <DefaultForm
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <DefaultForm onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={5}>
           <Grid item xs={12} md={6}>
             <TextField
@@ -265,7 +264,7 @@ const Form = () => {
               disabled={loading}
               inputRef={register}
               error={errors.title !== undefined}
-              helperText={errors.title && errors.title.message}
+              helperText={errors.title?.message}
               InputLabelProps={{ shrink: true }}
             />
             <TextField
@@ -280,7 +279,7 @@ const Form = () => {
               inputRef={register}
               InputLabelProps={{ shrink: true }}
               error={errors.description !== undefined}
-              helperText={errors.description && errors.description.message}
+              helperText={errors.description?.message}
             />
 
             <Grid container spacing={1}>
@@ -294,9 +293,7 @@ const Form = () => {
                   disabled={loading}
                   inputRef={register}
                   error={errors.year_launched !== undefined}
-                  helperText={
-                    errors.year_launched && errors.year_launched.message
-                  }
+                  helperText={errors.year_launched?.message}
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
@@ -311,7 +308,7 @@ const Form = () => {
                   disabled={loading}
                   inputRef={register}
                   error={errors.duration !== undefined}
-                  helperText={errors.duration && errors.duration.message}
+                  helperText={errors.duration?.message}
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>

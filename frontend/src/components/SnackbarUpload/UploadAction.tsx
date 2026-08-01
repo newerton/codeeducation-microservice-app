@@ -1,20 +1,20 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
 import {
-  makeStyles,
-  Theme,
   Fade,
-  ListItemSecondaryAction,
   IconButton,
+  ListItemSecondaryAction,
+  type Theme,
+  makeStyles,
 } from '@material-ui/core';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ErrorIcon from '@material-ui/icons/Error';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { Upload } from '../../store/upload/types';
+import ErrorIcon from '@material-ui/icons/Error';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useDebounce } from 'use-debounce';
 import { Creators } from '../../store/upload';
 import { hasError, isFinished } from '../../store/upload/getters';
-import { useDebounce } from 'use-debounce';
+import type { Upload } from '../../store/upload/types';
 
 interface UploadActionProps {
   upload: Upload;

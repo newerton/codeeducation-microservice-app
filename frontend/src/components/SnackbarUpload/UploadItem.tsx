@@ -1,19 +1,19 @@
-import React from 'react';
 import {
+  Divider,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Typography,
-  Divider,
-  makeStyles,
-  Theme,
+  type Theme,
   Tooltip,
+  Typography,
+  makeStyles,
 } from '@material-ui/core';
 import MovieIcon from '@material-ui/icons/Movie';
-import UploadProgress from './UploadProgress';
-import UploadAction from './UploadAction';
-import { Upload } from '../../store/upload/types';
+import React from 'react';
 import { hasError } from '../../store/upload/getters';
+import type { Upload } from '../../store/upload/types';
+import UploadAction from './UploadAction';
+import UploadProgress from './UploadProgress';
 
 interface UploadItemProps {
   upload: Upload;

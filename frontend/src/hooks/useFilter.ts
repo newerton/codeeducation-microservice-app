@@ -1,25 +1,25 @@
+import { isEqual } from 'lodash';
+import type { MUIDataTableColumn } from 'mui-datatables';
 import {
-  useState,
-  useReducer,
-  Dispatch,
-  Reducer,
+  type Dispatch,
+  type Reducer,
+  useCallback,
   useEffect,
   useMemo,
-  useCallback,
+  useReducer,
+  useState,
 } from 'react';
+import { useHistory, useLocation } from 'react-router';
+import { useDebounce } from 'use-debounce';
+import type { MuiDataTableRefComponent } from '../components/Table';
 import reducer, { Creators } from '../store/filter';
-import {
-  State as FilterState,
+import type {
   Actions as FilterActions,
+  State as FilterState,
   State,
 } from '../store/filter/types';
-import { MUIDataTableColumn } from 'mui-datatables';
-import { useDebounce } from 'use-debounce';
-import { useHistory, useLocation } from 'react-router';
-import { isEqual } from 'lodash';
+import type { ObjectSchema } from '../util/vendor/yup';
 import * as Yup from '../util/vendor/yup';
-import { MuiDataTableRefComponent } from '../components/Table';
-import { ObjectSchema } from '../util/vendor/yup';
 
 interface ExtraFilter {
   getStateFromUrl: (queryParams: URLSearchParams) => any;
@@ -57,39 +57,35 @@ const useFilter = (options: UseFilterOptions) => {
 
   const schema = useMemo(() => {
     return Yup.object().shape<FilterState>({
-      search: Yup
-        .string()
+      search: Yup.string()
         .transform((value) => (!value ? undefined : value))
         .default(''),
       pagination: Yup.object().shape({
-        page: Yup
-          .number()
-          .transform((value) => (isNaN(value) || value < 1 ? undefined : value))
-          .default(1),
-        per_page: Yup
-          .number()
+        page: Yup.number()
           .transform((value) =>
-            isNaN(value) || !rowsPerPageOptions.includes(parseInt(value))
+            Number.isNaN(value) || value < 1 ? undefined : value,
+          )
+          .default(1),
+        per_page: Yup.number()
+          .transform((value) =>
+            Number.isNaN(value) ||
+            !rowsPerPageOptions.includes(parseInt(value, 10))
               ? undefined
               : value,
           )
           .default(rowsPerPage),
       }),
       order: Yup.object().shape({
-        sort: Yup
-          .string()
+        sort: Yup.string()
           .nullable()
           .transform((value) => {
             const columnsName = columns
-              .filter(
-                (column) => !column.options || column.options.sort !== false,
-              )
+              .filter((column) => column.options?.sort !== false)
               .map((column) => column.name);
             return columnsName.includes(value) ? value : undefined;
           })
           .default(null),
-        dir: Yup
-          .string()
+        dir: Yup.string()
           .nullable()
           .transform((value) =>
             !value || !['asc', 'desc'].includes(value.toLowerCase())
@@ -145,7 +141,7 @@ const useFilter = (options: UseFilterOptions) => {
           sort: state.order.sort,
           dir: state.order.dir,
         }),
-        ...(extraFilter && extraFilter.formatSearchParams(state)),
+        ...extraFilter?.formatSearchParams(state),
       };
     },
     [cleanSearchText],

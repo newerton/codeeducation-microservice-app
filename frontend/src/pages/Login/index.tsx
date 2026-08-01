@@ -1,22 +1,22 @@
 import { useKeycloak } from '@react-keycloak/web';
-import React from 'react';
+import type React from 'react';
 import { Redirect, useLocation } from 'react-router';
 import Waiting from '../../components/Waiting';
 import { useHasRealmRole } from '../../hooks/useHasRealmRole';
 import NotAuthorized from '../NotAuthorized';
 
-interface LoginProps {}
+type LoginProps = {};
 
 interface stateType {
   from: { pathname: string };
 }
 
-const Login: React.FC<LoginProps> = (props) => {
+const Login: React.FC<LoginProps> = (_props) => {
   const { keycloak } = useKeycloak();
   const location = useLocation<stateType>();
   const hasCatalogAdmin = useHasRealmRole('catalog-admin');
 
-  if(keycloak!.authenticated && !hasCatalogAdmin){
+  if (keycloak?.authenticated && !hasCatalogAdmin) {
     return <NotAuthorized />;
   }
 
@@ -24,10 +24,9 @@ const Login: React.FC<LoginProps> = (props) => {
     from: { pathname: '/' },
   };
 
-  if (keycloak!.authenticated) {
+  if (keycloak?.authenticated) {
     return <Redirect to={from} />;
   }
-
 
   keycloak.login({
     redirectUri: `${window.location.origin}${process.env.REACT_APP_BASENAME}${from.pathname}`,

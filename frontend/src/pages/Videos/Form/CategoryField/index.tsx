@@ -1,31 +1,31 @@
-import React, {
-  useRef,
-  useCallback,
-  RefAttributes,
+import {
+  FormControl,
+  type FormControlProps,
+  FormHelperText,
+  type Theme,
+  Typography,
+  makeStyles,
+  useTheme,
+} from '@material-ui/core';
+import { grey } from '@material-ui/core/colors';
+import {
+  type MutableRefObject,
+  type RefAttributes,
   forwardRef,
-  MutableRefObject,
+  useCallback,
   useImperativeHandle,
+  useRef,
 } from 'react';
 import AsyncAutocomplete, {
-  AsyncAutocompleteComponent,
+  type AsyncAutocompleteComponent,
 } from '../../../../components/AsyncAutocomplete';
 import GridSelected from '../../../../components/GridSelected';
 import GridSelectedItem from '../../../../components/GridSelectedItem';
-import {
-  Typography,
-  FormControlProps,
-  FormControl,
-  FormHelperText,
-  makeStyles,
-  Theme,
-  useTheme,
-} from '@material-ui/core';
-import useHttpHandled from '../../../../hooks/useHttpHandled';
 import useCollectionManager from '../../../../hooks/useCollectionManager';
-import { Genre } from '../../../../util/models';
+import useHttpHandled from '../../../../hooks/useHttpHandled';
 import categoryHttp from '../../../../util/http/category-http';
 import { getGenresFromCategory } from '../../../../util/model-filters';
-import { grey } from '@material-ui/core/colors';
+import type { Genre } from '../../../../util/models';
 
 interface CategoryFieldProps extends RefAttributes<CategoryFieldComponent> {
   categories: any[];
@@ -40,7 +40,7 @@ export interface CategoryFieldComponent {
   clear: () => void;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((_theme: Theme) => ({
   genresSubtitle: {
     fontSize: '0.8rem',
     color: grey['800'],
@@ -56,9 +56,8 @@ const CategoryField = forwardRef<CategoryFieldComponent, CategoryFieldProps>(
       setCategories,
     );
     const classes = useStyles();
-    const autocompleteRef = useRef() as MutableRefObject<
-      AsyncAutocompleteComponent
-    >;
+    const autocompleteRef =
+      useRef() as MutableRefObject<AsyncAutocompleteComponent>;
     const theme = useTheme();
 
     const fetchOptions = useCallback(() => {
@@ -85,7 +84,7 @@ const CategoryField = forwardRef<CategoryFieldComponent, CategoryFieldProps>(
             clearOnEscape: true,
             freeSolo: false,
             getOptionLabel: (option) => option.name,
-            onChange: (event, value) => addItem(value),
+            onChange: (_event, value) => addItem(value),
             getOptionSelected: (option, value) => option.id === value.id,
             disabled: disabled === true || !genres.length,
           }}

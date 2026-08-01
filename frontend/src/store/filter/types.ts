@@ -1,4 +1,4 @@
-import { AnyAction } from 'redux';
+import type { AnyAction } from 'redux';
 
 export interface Pagination {
   page: number;

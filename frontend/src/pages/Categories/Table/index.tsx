@@ -1,5 +1,9 @@
-import React, {
-  MutableRefObject,
+import { Button, Chip, IconButton } from '@material-ui/core';
+import EditIcon from '@material-ui/icons/Edit';
+import { format, parseISO } from 'date-fns';
+import { useSnackbar } from 'notistack';
+import {
+  type MutableRefObject,
   useCallback,
   useContext,
   useEffect,
@@ -7,22 +11,17 @@ import React, {
   useState,
 } from 'react';
 import { Link } from 'react-router-dom';
-
-import { Button, Chip, IconButton } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
-import { format, parseISO } from 'date-fns';
-import DefaultTable, {
-  MuiDataTableRefComponent,
-  TableColumn,
-} from '../../../components/Table';
-import { useSnackbar } from 'notistack';
-import { Category, ListResponse } from '../../../util/models';
+import DeleteDialog from '../../../components/DeleteDialog';
 import LoadingContext from '../../../components/Loading/LoadingContext';
+import DefaultTable, {
+  type MuiDataTableRefComponent,
+  type TableColumn,
+} from '../../../components/Table';
+import FilterResetButton from '../../../components/Table/FilterResetButton';
 import useDeleteCollection from '../../../hooks/useDeleteCollection';
 import useFilter from '../../../hooks/useFilter';
 import categoryHttp from '../../../util/http/category-http';
-import DeleteDialog from '../../../components/DeleteDialog';
-import FilterResetButton from '../../../components/Table/FilterResetButton';
+import type { Category, ListResponse } from '../../../util/models';
 
 const columnsDefinition: TableColumn[] = [
   {
@@ -60,7 +59,7 @@ const columnsDefinition: TableColumn[] = [
     label: 'Criado em',
     width: '10%',
     options: {
-      customBodyRender(value, tableMeta, updateValue) {
+      customBodyRender(value, _tableMeta, _updateValue) {
         return <span>{format(parseISO(value), 'dd/MM/yyyy')}</span>;
       },
     },
@@ -71,7 +70,7 @@ const columnsDefinition: TableColumn[] = [
     width: '13%',
     options: {
       sort: false,
-      customBodyRender: (value, tableMeta) => {
+      customBodyRender: (_value, tableMeta) => {
         return (
           <IconButton
             color={'secondary'}
@@ -196,7 +195,7 @@ const Table = () => {
 
     categoryHttp
       .deleteCollection({ ids })
-      .then((response) => {
+      .then((_response) => {
         enqueueSnackbar('Registros excluidos com sucesso!', {
           variant: 'success',
         });
@@ -250,10 +249,9 @@ const Table = () => {
             }
             const columnIndex = columns.findIndex((c) => c.name === column);
             filterManager.changeExtraFilter({
-              [column]:
-                filterList[columnIndex] && filterList[columnIndex].length
-                  ? filterList[columnIndex][0]
-                  : null,
+              [column]: filterList[columnIndex]?.length
+                ? filterList[columnIndex][0]
+                : null,
             });
           },
           customToolbar: () => (

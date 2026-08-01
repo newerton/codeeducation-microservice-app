@@ -1,22 +1,22 @@
-import React from 'react';
 import {
   Card,
   CardActions,
-  Typography,
-  IconButton,
   Collapse,
+  IconButton,
   List,
+  type Theme,
+  Typography,
   makeStyles,
-  Theme,
 } from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import CloseIcon from '@material-ui/icons/Close';
-import { useSnackbar } from 'notistack';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import classNames from 'classnames';
-import UploadItem from './UploadItem';
+import { useSnackbar } from 'notistack';
+import React from 'react';
 import { useSelector } from 'react-redux';
-import { Upload, UploadModule } from '../../store/upload/types';
 import { countInProgress } from '../../store/upload/getters';
+import type { Upload, UploadModule } from '../../store/upload/types';
+import UploadItem from './UploadItem';
 
 interface SnackbarUploadInterface {
   id: string | number;

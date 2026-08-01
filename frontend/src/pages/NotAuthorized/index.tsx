@@ -1,13 +1,14 @@
 import {
   Box,
+  type Theme,
+  Typography,
   createStyles,
   makeStyles,
-  Theme,
-  Typography,
 } from '@material-ui/core';
-import React from 'react';
+import type React from 'react';
 import { Link } from 'react-router-dom';
-interface NotAuthorizedProps {}
+
+type NotAuthorizedProps = {};
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -24,7 +25,14 @@ const NotAuthorized: React.FC<NotAuthorizedProps> = () => {
   const classes = useStyles();
 
   return (
-    <Box display="flex" flex="1" alignItems="center" justifyContent="center" flexDirection="column" style={{ height: '90vh' }}>
+    <Box
+      display="flex"
+      flex="1"
+      alignItems="center"
+      justifyContent="center"
+      flexDirection="column"
+      style={{ height: '90vh' }}
+    >
       <Box textAlign="center">
         <Typography variant="h4" component="h1">
           403 - Acesso não autorizado

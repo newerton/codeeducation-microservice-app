@@ -1,5 +1,5 @@
-import React from 'react';
-import { Container, Typography, makeStyles, Box } from '@material-ui/core';
+import { Box, Container, Typography, makeStyles } from '@material-ui/core';
+import type React from 'react';
 
 type PageProps = {
   title: string;

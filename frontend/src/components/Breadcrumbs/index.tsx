@@ -1,15 +1,14 @@
-import React from 'react';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import Link, { LinkProps } from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
+import { Box, Container } from '@material-ui/core';
 import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
+import Link, { type LinkProps } from '@material-ui/core/Link';
+import { type Theme, createStyles, makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import type { Location } from 'history';
 import { Route } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { Location } from 'history';
-import routes from '../../routes';
 import RouteParser from 'route-parser';
-import { Container, Box } from '@material-ui/core';
 import { useHasRealmRole } from '../../hooks/useHasRealmRole';
+import routes from '../../routes';
 
 const breadcrumbNameMap: { [key: string]: string } = {};
 routes.forEach(
@@ -52,7 +51,7 @@ export default function Breadcrumbs() {
     pathnames.unshift('/');
     return (
       <MuiBreadcrumbs aria-label="breadcrumb">
-        {pathnames.map((value, index) => {
+        {pathnames.map((_value, index) => {
           const last = index === pathnames.length - 1;
           const to = `${pathnames
             .slice(0, index + 1)

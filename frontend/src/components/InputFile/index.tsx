@@ -1,7 +1,11 @@
-import React from 'react';
-import { TextField, InputAdornment } from '@material-ui/core';
-import { useRef, MutableRefObject, useState, useImperativeHandle } from 'react';
-import { TextFieldProps } from '@material-ui/core/TextField';
+import { InputAdornment, TextField } from '@material-ui/core';
+import type { TextFieldProps } from '@material-ui/core/TextField';
+import React, {
+  type MutableRefObject,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 
 export interface InputFileProps
   extends React.RefAttributes<InputFileComponent> {
@@ -27,10 +31,9 @@ const InputFile = React.forwardRef<InputFileComponent, InputFileProps>(
       variant: 'outlined',
       ...props.TextFieldProps,
       InputProps: {
-        ...(props.TextFieldProps &&
-          props.TextFieldProps.inputProps && {
-            ...props.TextFieldProps.InputProps,
-          }),
+        ...(props.TextFieldProps?.inputProps && {
+          ...props.TextFieldProps.InputProps,
+        }),
         readOnly: true,
         endAdornment: (
           <InputAdornment position="end">
@@ -62,7 +65,7 @@ const InputFile = React.forwardRef<InputFileComponent, InputFileProps>(
               .join(', '),
           );
         }
-        if (props.InputFileProps && props.InputFileProps.onChange) {
+        if (props.InputFileProps?.onChange) {
           props.InputFileProps.onChange(event);
         }
       },

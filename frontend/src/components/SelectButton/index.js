@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
-
 import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useField } from '@unform/core';
 import PropTypes from 'prop-types';
+import { useEffect, useRef, useState } from 'react';
 
 const useStyles = makeStyles(() => ({
   selectError: {
@@ -13,13 +12,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function SelectButton({
-  name,
-  label,
-  list,
-  multiple,
-  loading,
-}) {
+export default function SelectButton({ name, label, list, multiple, loading }) {
   const classes = useStyles();
   const ref = useRef();
   const labelRef = useRef(0);
@@ -27,10 +20,10 @@ export default function SelectButton({
   const { fieldName, registerField, defaultValue, error } = useField(name);
   const [values, setValues] = useState(defaultValue);
 
-  const parseValue = inputRef =>
+  const parseValue = (inputRef) =>
     inputRef.dataset.value ? inputRef.dataset.value.split(',') : [];
   const handleChange = () => setValues(values);
-  const handleChangeMultiple = event => {
+  const handleChangeMultiple = (event) => {
     const { value } = event.target;
 
     const options = [];
@@ -47,7 +40,7 @@ export default function SelectButton({
       path: 'dataset.value',
       parseValue,
     });
-  }, [ref.current, fieldName]); // eslint-disable-line
+  }, [fieldName, parseValue, registerField]); // eslint-disable-line
 
   useEffect(() => {
     setLabelWidth(labelRef.current.offsetWidth);
@@ -55,44 +48,41 @@ export default function SelectButton({
 
   useEffect(() => {
     if (defaultValue) setValues(defaultValue);
-  }, [fieldName, defaultValue]);
+  }, [defaultValue]);
 
   return (
-    <>
-      <FormControl
-        margin="normal"
-        variant="outlined"
-        error={error && true}
-        fullWidth
+    <FormControl
+      margin="normal"
+      variant="outlined"
+      error={error && true}
+      fullWidth
+    >
+      <InputLabel ref={labelRef} id={`${fieldName}-select`}>
+        {label}
+      </InputLabel>
+      <Select
+        multiple={multiple}
+        labelId={`${fieldName}-select`}
+        id={fieldName}
+        value={values}
+        data-value={values}
+        onChange={multiple ? handleChangeMultiple : handleChange}
+        labelWidth={labelWidth}
+        ref={ref}
+        disabled={loading}
       >
-        <InputLabel ref={labelRef} id={`${fieldName}-select`}>
-          {label}
-        </InputLabel>
-        <Select
-          multiple={multiple}
-          labelId={`${fieldName}-select`}
-          id={fieldName}
-          value={values}
-          data-value={values}
-          onChange={multiple ? handleChangeMultiple : handleChange}
-          labelWidth={labelWidth}
-          ref={ref}
-          disabled={loading}
-        >
-          {list &&
-            list.map(item => (
-              <MenuItem value={item.id} key={item.id}>
-                {item.name}
-              </MenuItem>
-            ))}
-        </Select>
-        {error && (
-          <p className={classes.selectError} id="name-helper-text">
-            {error}
-          </p>
-        )}
-      </FormControl>
-    </>
+        {list?.map((item) => (
+          <MenuItem value={item.id} key={item.id}>
+            {item.name}
+          </MenuItem>
+        ))}
+      </Select>
+      {error && (
+        <p className={classes.selectError} id="name-helper-text">
+          {error}
+        </p>
+      )}
+    </FormControl>
   );
 }
 

@@ -1,4 +1,8 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, {
+  type AxiosError,
+  type AxiosRequestConfig,
+  type AxiosResponse,
+} from 'axios';
 import { keycloak } from '../auth';
 
 export const httpVideo = axios.create({
@@ -38,7 +42,7 @@ export function addGlobalRequestInterceptor(
   onRejected?: (error: AxiosError) => any,
 ) {
   const ids: number[] = [];
-  for (let i of instances) {
+  for (const i of instances) {
     const id = i.interceptors.request.use(onFulfilled, onRejected);
     ids.push(id);
   }
@@ -52,7 +56,7 @@ export function addGlobalResponseInterceptor(
   onRejected?: (error: AxiosError) => any,
 ) {
   const ids: number[] = [];
-  for (let i of instances) {
+  for (const i of instances) {
     const id = i.interceptors.response.use(onFulfilled, onRejected);
     ids.push(id);
   }

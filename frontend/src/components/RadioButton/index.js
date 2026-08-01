@@ -1,15 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
-
 import {
   FormControl,
   FormControlLabel,
   FormLabel,
-  RadioGroup,
   Radio,
+  RadioGroup,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useField } from '@unform/core';
 import PropTypes from 'prop-types';
+import { useEffect, useRef, useState } from 'react';
 
 const useStyles = makeStyles(() => ({
   radioGroupError: {
@@ -31,43 +30,41 @@ export default function RadioButton({ name, label, list, loading }) {
       ref: ref.current,
       path: 'dataset.value',
     });
-  }, [ref.current, fieldName]); // eslint-disable-line
+  }, [fieldName, registerField]); // eslint-disable-line
 
   useEffect(() => {
     if (defaultValue) setValues(defaultValue.toString());
-  }, [fieldName, defaultValue]);
+  }, [defaultValue]);
 
   return (
-    <>
-      <FormControl component="fieldset" margin="normal">
-        <FormLabel component="legend">{label}</FormLabel>
-        <RadioGroup
-          aria-label={fieldName}
-          id={fieldName}
-          name={fieldName}
-          value={values}
-          data-value={values}
-          onChange={e => setValues(e.target.value)}
-          ref={ref}
-        >
-          {list &&
-            Object.keys(list).map(key => (
-              <FormControlLabel
-                key={key}
-                value={key}
-                control={<Radio />}
-                label={list[key]}
-                disabled={loading}
-              />
-            ))}
-        </RadioGroup>
-        {error && (
-          <p className={classes.radioGroupError} id="name-helper-text">
-            {error}
-          </p>
-        )}
-      </FormControl>
-    </>
+    <FormControl component="fieldset" margin="normal">
+      <FormLabel component="legend">{label}</FormLabel>
+      <RadioGroup
+        aria-label={fieldName}
+        id={fieldName}
+        name={fieldName}
+        value={values}
+        data-value={values}
+        onChange={(e) => setValues(e.target.value)}
+        ref={ref}
+      >
+        {list &&
+          Object.keys(list).map((key) => (
+            <FormControlLabel
+              key={key}
+              value={key}
+              control={<Radio />}
+              label={list[key]}
+              disabled={loading}
+            />
+          ))}
+      </RadioGroup>
+      {error && (
+        <p className={classes.radioGroupError} id="name-helper-text">
+          {error}
+        </p>
+      )}
+    </FormControl>
   );
 }
 

@@ -1,23 +1,20 @@
-import React, { useState } from 'react';
-
 import {
   AppBar,
+  IconButton,
+  Link,
+  Menu,
+  MenuItem,
   Toolbar,
   Typography,
   makeStyles,
-  IconButton,
-  Menu,
-  MenuItem,
-  Link,
 } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
-
-import logo from '../../static/logo.png';
-
-import Drawer from './Drawer';
 import { AccountCircle } from '@material-ui/icons';
+import MenuIcon from '@material-ui/icons/Menu';
+import React, { useState } from 'react';
 import { useHasClient, useHasRealmRole } from '../../hooks/useHasRealmRole';
+import logo from '../../static/logo.png';
 import { keycloakLinks } from '../../util/auth';
+import Drawer from './Drawer';
 
 // import { Container } from './styles';
 const useStyles = makeStyles((theme) => ({

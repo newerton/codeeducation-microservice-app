@@ -1,11 +1,11 @@
-import React from 'react';
 import Grow from '@material-ui/core/Grow';
-import TextField from '@material-ui/core/TextField';
-import SearchIcon from '@material-ui/icons/Search';
 import IconButton from '@material-ui/core/IconButton';
-import ClearIcon from '@material-ui/icons/Clear';
 import { withStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import ClearIcon from '@material-ui/icons/Clear';
+import SearchIcon from '@material-ui/icons/Search';
 import { debounce } from 'lodash';
+import React from 'react';
 
 const defaultSearchStyles = (theme) => ({
   main: {
@@ -64,7 +64,7 @@ class DebouncedTableSearch extends React.PureComponent {
     document.addEventListener('keydown', this.onKeyDown, false);
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps, _prevState, _snapshot) {
     const { searchText } = this.props;
 
     if (
@@ -83,7 +83,7 @@ class DebouncedTableSearch extends React.PureComponent {
       } else {
         try {
           this.props.onHide();
-        } catch (e) {}
+        } catch (_e) {}
       }
     }
   }
@@ -100,7 +100,7 @@ class DebouncedTableSearch extends React.PureComponent {
 
   render() {
     const { classes, options, onHide } = this.props;
-    let value = this.state.text;
+    const value = this.state.text;
 
     return (
       <Grow appear in={true} timeout={300}>

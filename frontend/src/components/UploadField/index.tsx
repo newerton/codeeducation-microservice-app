@@ -1,8 +1,14 @@
-import React, { forwardRef, MutableRefObject, useImperativeHandle, useRef } from 'react';
-import { FormControl, Button } from '@material-ui/core';
-import { FormControlProps } from '@material-ui/core/FormControl';
-import InputFile, { InputFileComponent } from '../InputFile';
+import { Button, FormControl } from '@material-ui/core';
+import type { FormControlProps } from '@material-ui/core/FormControl';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import type React from 'react';
+import {
+  type MutableRefObject,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+} from 'react';
+import InputFile, { type InputFileComponent } from '../InputFile';
 
 interface UploadFieldProps extends React.RefAttributes<UploadFieldComponent> {
   accept: string;

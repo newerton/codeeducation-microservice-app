@@ -1,6 +1,6 @@
-import React from 'react';
 import { Grid, makeStyles } from '@material-ui/core';
-import { GridProps } from '@material-ui/core/Grid';
+import type { GridProps } from '@material-ui/core/Grid';
+import type React from 'react';
 
 interface DefaultFormProps
   extends React.DetailedHTMLProps<

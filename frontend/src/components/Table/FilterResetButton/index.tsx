@@ -1,6 +1,6 @@
-import React from 'react';
-import { Tooltip, IconButton, makeStyles } from '@material-ui/core';
+import { IconButton, Tooltip, makeStyles } from '@material-ui/core';
 import ClearAllIcon from '@material-ui/icons/ClearAll';
+import type React from 'react';
 
 const useStyles = makeStyles((theme) => ({
   iconButton: (theme as any).overrides.MUIDataTableTooblar.icon,

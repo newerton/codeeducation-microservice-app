@@ -1,5 +1,11 @@
-import React, { useCallback } from 'react';
-import { Redirect, Route, RouteComponentProps, RouteProps } from 'react-router';
+import type React from 'react';
+import { useCallback } from 'react';
+import {
+  Redirect,
+  Route,
+  type RouteComponentProps,
+  type RouteProps,
+} from 'react-router';
 import { useHasRealmRole } from '../hooks/useHasRealmRole';
 import NotAuthorized from '../pages/NotAuthorized';
 
@@ -27,7 +33,7 @@ const PrivateRoute: React.FC<PrivateProps> = (props) => {
         />
       );
     },
-    [hasCatalogAdmin],
+    [hasCatalogAdmin, Component],
   );
 
   return <Route {...rest} render={render} />;

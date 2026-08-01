@@ -1,26 +1,24 @@
-import React from 'react';
+import type { DefaultComponentProps } from '@material-ui/core/OverridableComponent';
 
 import {
-  DashboardRounded,
   CategoryRounded,
+  CloudUploadRounded,
+  DashboardRounded,
   PersonRounded,
   VideocamRounded,
-  CloudUploadRounded,
 } from '@material-ui/icons';
-
+import type { RouteProps } from 'react-router-dom';
 import CastMembersForm from '../pages/CastMembers/Form';
 import CastMembersList from '../pages/CastMembers/List';
 import CategoriesForm from '../pages/Categories/Form';
 import CategoriesList from '../pages/Categories/List';
 import Dashboard from '../pages/Dashboard';
-import Login from '../pages/Login';
 import GenresForm from '../pages/Genres/Form';
 import GenresList from '../pages/Genres/List';
+import Login from '../pages/Login';
 import UploadsList from '../pages/Uploads/List';
 import VideosForm from '../pages/Videos/Form';
 import VideosList from '../pages/Videos/List';
-import { DefaultComponentProps } from '@material-ui/core/OverridableComponent';
-import { RouteProps } from 'react-router-dom';
 
 export interface MyRouteProps extends RouteProps {
   name: string;

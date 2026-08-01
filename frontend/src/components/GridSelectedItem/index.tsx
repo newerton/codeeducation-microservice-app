@@ -1,7 +1,7 @@
-import React, { MouseEventHandler } from 'react';
-
 import { Grid, IconButton } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
+import type React from 'react';
+import type { MouseEventHandler } from 'react';
 
 interface GridSelectedItemProps {
   onDelete: MouseEventHandler<any>;

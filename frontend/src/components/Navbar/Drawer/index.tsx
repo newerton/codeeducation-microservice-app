@@ -1,19 +1,17 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-
 import {
-  SwipeableDrawer,
-  Link as MuiLink,
+  Divider,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Divider,
+  Link as MuiLink,
+  SwipeableDrawer,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import routes from '../../../routes';
-import { MyRouteProps } from '../../../routes';
 import { People } from '@material-ui/icons';
+import type React from 'react';
+import { Link } from 'react-router-dom';
+import routes, { type MyRouteProps } from '../../../routes';
 
 interface DrawerProps {
   open: boolean;

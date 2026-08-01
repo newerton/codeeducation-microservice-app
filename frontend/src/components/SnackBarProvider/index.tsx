@@ -1,11 +1,10 @@
-import React from 'react';
-
+import { IconButton, type Theme, makeStyles } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import {
   SnackbarProvider as NotistackProvider,
-  SnackbarProviderProps,
+  type SnackbarProviderProps,
 } from 'notistack';
-import { IconButton, makeStyles, Theme } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import type React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => {
   return {

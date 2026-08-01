@@ -1,16 +1,16 @@
-import React from 'react';
 import {
-  makeStyles,
-  Theme,
-  ListItem,
   Grid,
+  ListItem,
+  type Theme,
   Typography,
+  makeStyles,
 } from '@material-ui/core';
-import MovieIcon from '@material-ui/icons/Movie';
 import ImageIcon from '@material-ui/icons/Image';
+import MovieIcon from '@material-ui/icons/Movie';
+import type React from 'react';
 import UploadProgress from '../../../components/UploadProgress';
+import type { FileUpload, Upload } from '../../../store/upload/types';
 import UploadAction from './UploadAction';
-import { Upload, FileUpload } from '../../../store/upload/types';
 
 const useStyles = makeStyles((theme: Theme) => {
   return {

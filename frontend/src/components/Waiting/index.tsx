@@ -1,15 +1,17 @@
-import React from 'react';
-import {
-  Box,
-  CircularProgress,
-  Typography,
-} from '@material-ui/core';
+import { Box, CircularProgress, Typography } from '@material-ui/core';
+import type React from 'react';
 
-interface WaitingPros {}
+type WaitingPros = {};
 
 const Waiting: React.FC<WaitingPros> = () => {
   return (
-    <Box display="flex" flex="1" alignItems="center" justifyContent="center" style={{ height: '90vh' }}>
+    <Box
+      display="flex"
+      flex="1"
+      alignItems="center"
+      justifyContent="center"
+      style={{ height: '90vh' }}
+    >
       <Box mr={2}>
         <CircularProgress />
       </Box>

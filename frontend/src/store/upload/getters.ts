@@ -1,4 +1,4 @@
-import { Upload, FileUpload } from './types';
+import type { FileUpload, Upload } from './types';
 
 export function countInProgress(uploads: Upload[]) {
   return uploads.filter((upload) => !isFinished(upload)).length;

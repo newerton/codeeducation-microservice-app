@@ -1,9 +1,8 @@
 import { useKeycloak } from '@react-keycloak/web';
-import React from 'react';
-import { Switch, Route as ReactRoute } from 'react-router-dom';
+import { Route as ReactRoute, Switch } from 'react-router-dom';
+import Waiting from '../components/Waiting';
 import routes from './index';
 import PrivateRoute from './PrivateRoute';
-import Waiting from '../components/Waiting';
 
 const AppRouter = () => {
   const { initialized } = useKeycloak();

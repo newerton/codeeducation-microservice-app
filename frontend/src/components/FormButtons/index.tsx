@@ -1,12 +1,12 @@
-import React, { Dispatch, SetStateAction } from 'react';
-
 import {
   Box,
   Button,
-  ButtonProps,
+  type ButtonProps,
   CircularProgress,
   makeStyles,
 } from '@material-ui/core';
+import type React from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 
 interface FormButtonsProps {
   loading?: boolean;
@@ -27,7 +27,11 @@ const useStyles = makeStyles((theme) => {
   };
 });
 
-const FormButtons: React.FC<FormButtonsProps> = ({ loading, handleSave, setFormType }) => {
+const FormButtons: React.FC<FormButtonsProps> = ({
+  loading,
+  handleSave,
+  setFormType,
+}) => {
   const classes = useStyles();
   const buttonProps: ButtonProps = {
     className: classes.submit,

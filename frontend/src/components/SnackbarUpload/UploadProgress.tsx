@@ -1,16 +1,20 @@
-import React from 'react';
-import { makeStyles, Theme, CircularProgress, Fade } from '@material-ui/core';
+import {
+  CircularProgress,
+  Fade,
+  type Theme,
+  makeStyles,
+} from '@material-ui/core';
 import { grey } from '@material-ui/core/colors';
-import { FileUpload, Upload } from '../../store/upload/types';
+import type React from 'react';
 import { hasError } from '../../store/upload/getters';
-
+import type { FileUpload, Upload } from '../../store/upload/types';
 
 interface UploadProgressProps {
   size: number;
   uploadOrFile: Upload | FileUpload;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((_theme: Theme) => ({
   progressContainer: {
     position: 'relative',
   },

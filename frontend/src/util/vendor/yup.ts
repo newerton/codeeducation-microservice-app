@@ -1,5 +1,5 @@
 /* eslint-disable no-template-curly-in-string  */
-import { LocaleObject, setLocale } from 'yup';
+import { type LocaleObject, setLocale } from 'yup';
 
 const ptBR: LocaleObject = {
   mixed: {

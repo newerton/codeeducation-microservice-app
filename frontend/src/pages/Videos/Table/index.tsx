@@ -1,5 +1,9 @@
-import React, {
-  MutableRefObject,
+import { Button, IconButton } from '@material-ui/core';
+import EditIcon from '@material-ui/icons/Edit';
+import { format, parseISO } from 'date-fns';
+import { useSnackbar } from 'notistack';
+import {
+  type MutableRefObject,
   useCallback,
   useContext,
   useEffect,
@@ -7,22 +11,17 @@ import React, {
   useState,
 } from 'react';
 import { Link } from 'react-router-dom';
-
-import { Button, IconButton } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
-import { format, parseISO } from 'date-fns';
-import { useSnackbar } from 'notistack';
-import { ListResponse, Video } from '../../../util/models';
+import DeleteDialog from '../../../components/DeleteDialog';
 import LoadingContext from '../../../components/Loading/LoadingContext';
-import useDeleteCollection from '../../../hooks/useDeleteCollection';
 import DefaultTable, {
-  MuiDataTableRefComponent,
-  TableColumn,
+  type MuiDataTableRefComponent,
+  type TableColumn,
 } from '../../../components/Table';
+import FilterResetButton from '../../../components/Table/FilterResetButton';
+import useDeleteCollection from '../../../hooks/useDeleteCollection';
 import useFilter from '../../../hooks/useFilter';
 import videoHttp from '../../../util/http/video-http';
-import DeleteDialog from '../../../components/DeleteDialog';
-import FilterResetButton from '../../../components/Table/FilterResetButton';
+import type { ListResponse, Video } from '../../../util/models';
 
 const columnsDefinition: TableColumn[] = [
   {
@@ -88,7 +87,7 @@ const columnsDefinition: TableColumn[] = [
     options: {
       sort: false,
       filter: false,
-      customBodyRender: (value, tableMeta) => {
+      customBodyRender: (_value, tableMeta) => {
         return (
           <span>
             <IconButton
@@ -216,7 +215,7 @@ const Table = () => {
 
     videoHttp
       .deleteCollection({ ids })
-      .then((response) => {
+      .then((_response) => {
         enqueueSnackbar('Registros excluidos com sucesso!', {
           variant: 'success',
         });
@@ -269,10 +268,9 @@ const Table = () => {
             }
             const columnIndex = columns.findIndex((c) => c.name === column);
             filterManager.changeExtraFilter({
-              [column]:
-                filterList[columnIndex] && filterList[columnIndex].length
-                  ? filterList[columnIndex][0]
-                  : null,
+              [column]: filterList[columnIndex]?.length
+                ? filterList[columnIndex][0]
+                : null,
             });
           },
           customToolbar: () => (

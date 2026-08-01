@@ -1,16 +1,18 @@
-import {
-  AxiosInstance,
-  AxiosResponse,
-  AxiosRequestConfig,
-  CancelTokenSource,
+import axios, {
+  type AxiosInstance,
+  type AxiosRequestConfig,
+  type AxiosResponse,
+  type CancelTokenSource,
 } from 'axios';
-import axios from 'axios';
 import { serialize } from 'object-to-formdata';
 
 export default class HttpResource {
   private cancelList: CancelTokenSource | null = null;
 
-  constructor(protected http: AxiosInstance, protected resource) {}
+  constructor(
+    protected http: AxiosInstance,
+    protected resource,
+  ) {}
 
   list<T = any>(options?: { queryParams? }): Promise<AxiosResponse<T>> {
     if (this.cancelList) {
@@ -22,7 +24,7 @@ export default class HttpResource {
       cancelToken: this.cancelList.token,
     };
 
-    if (options && options.queryParams) {
+    if (options?.queryParams) {
       config.params = options.queryParams;
     }
     return this.http.get<T>(this.resource, config);
@@ -33,21 +35,21 @@ export default class HttpResource {
   }
 
   create<T = any>(data): Promise<AxiosResponse<T>> {
-    let sendData = this.makeSendData(data);
+    const sendData = this.makeSendData(data);
     return this.http.post<T>(this.resource, sendData);
   }
 
   update<T = any>(
     id,
     data,
-    options?: { http?: { usePost: boolean }; config?: AxiosRequestConfig }
+    options?: { http?: { usePost: boolean }; config?: AxiosRequestConfig },
   ): Promise<AxiosResponse<T>> {
     let sendData = data;
     if (this.containsFile(data)) {
       sendData = this.getFormData(data);
     }
     const { http, config } = (options || {}) as any;
-    return !options || !http || !http.usePost
+    return !options || !http?.usePost
       ? this.http.put<T>(`${this.resource}/${id}`, sendData, config)
       : this.http.post<T>(`${this.resource}/${id}`, sendData, config);
   }
@@ -55,14 +57,14 @@ export default class HttpResource {
   partialUpdate<T = any>(
     id,
     data,
-    options?: { http?: { usePost: boolean }; config?: AxiosRequestConfig }
+    options?: { http?: { usePost: boolean }; config?: AxiosRequestConfig },
   ): Promise<AxiosResponse<T>> {
     let sendData = data;
     if (this.containsFile(data)) {
       sendData = this.getFormData(data);
     }
     const { http, config } = (options || {}) as any;
-    return !options || !http || !http.usePost
+    return !options || !http?.usePost
       ? this.http.patch<T>(`${this.resource}/${id}`, sendData, config)
       : this.http.post<T>(`${this.resource}/${id}`, sendData, config);
   }

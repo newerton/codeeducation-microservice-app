@@ -1,16 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
-
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers';
-import * as Yup from 'yup';
+import { Checkbox, FormControlLabel, TextField } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
-import { Category } from '../../../util/models';
+import React, { useContext, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useHistory, useParams } from 'react-router';
+import * as Yup from 'yup';
+import DefaultForm from '../../../components/DefaultForm';
+import FormButtons from '../../../components/FormButtons';
 import LoadingContext from '../../../components/Loading/LoadingContext';
 import categoryHttp from '../../../util/http/category-http';
-import DefaultForm from '../../../components/DefaultForm';
-import { Checkbox, FormControlLabel, TextField } from '@material-ui/core';
-import FormButtons from '../../../components/FormButtons';
+import type { Category } from '../../../util/models';
 
 const schema = Yup.object().shape({
   name: Yup.string().required('O nome é obrigatório'),
@@ -75,7 +74,7 @@ const Form = () => {
     register({ name: 'is_active' });
   }, [register]);
 
-  const onSubmit = async (formData, event) => {
+  const onSubmit = async (formData, _event) => {
     try {
       const http = !category
         ? categoryHttp.create(formData)
@@ -126,7 +125,7 @@ const Form = () => {
           disabled={loading}
           inputRef={register}
           error={errors.name !== undefined}
-          helperText={errors.name && errors.name.message}
+          helperText={errors.name?.message}
           InputLabelProps={{ shrink: true }}
         />
         <TextField

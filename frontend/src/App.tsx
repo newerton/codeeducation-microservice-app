@@ -1,19 +1,19 @@
-import React from 'react';
-import Navbar from './components/Navbar';
 import {
   Box,
-  MuiThemeProvider,
-  CssBaseline,
   Container,
+  CssBaseline,
+  MuiThemeProvider,
 } from '@material-ui/core';
+import { ReactKeycloakProvider } from '@react-keycloak/web';
+import type React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import AppRouter from './routes/AppRouter';
 import Breadcrumbs from './components/Breadcrumbs';
-import theme from './theme';
+import LoadingProvider from './components/Loading/LoadingProvider';
+import Navbar from './components/Navbar';
 import SnackBarProvider from './components/SnackBarProvider';
 import Spinner from './components/Spinner';
-import LoadingProvider from './components/Loading/LoadingProvider';
-import { ReactKeycloakProvider } from '@react-keycloak/web';
+import AppRouter from './routes/AppRouter';
+import theme from './theme';
 import { keycloak, keycloakConfig } from './util/auth';
 
 const App: React.FC = () => {

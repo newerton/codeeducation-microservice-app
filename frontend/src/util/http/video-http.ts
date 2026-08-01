@@ -1,5 +1,5 @@
-import HttpResource from './http-resource';
 import { httpVideo } from '.';
+import HttpResource from './http-resource';
 
 const videoHttp = new HttpResource(httpVideo, 'videos');
 

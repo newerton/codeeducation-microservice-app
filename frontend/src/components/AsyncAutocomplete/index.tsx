@@ -1,19 +1,29 @@
-import React, { forwardRef, RefAttributes, useEffect, useImperativeHandle, useState } from 'react';
+import { CircularProgress } from '@material-ui/core';
+import TextField, { type TextFieldProps } from '@material-ui/core/TextField';
 import {
   Autocomplete,
-  AutocompleteProps,
-  UseAutocompleteProps
+  type AutocompleteProps,
+  type UseAutocompleteProps,
 } from '@material-ui/lab';
-import TextField, { TextFieldProps } from '@material-ui/core/TextField';
-import { CircularProgress } from '@material-ui/core';
+import {
+  type RefAttributes,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from 'react';
 import { useDebounce } from 'use-debounce/lib';
 
 interface AsyncAutocompleteProps
-extends RefAttributes<AsyncAutocompleteComponent> {
+  extends RefAttributes<AsyncAutocompleteComponent> {
   fetchOptions: (searchText) => Promise<any>;
   debounceTime?: number;
   TextFieldProps?: TextFieldProps;
-  AutocompleteProps?: Omit<AutocompleteProps<any, any, any, any>, 'renderInput' | 'options'> & Omit<UseAutocompleteProps<any, any, any, any>, 'renderInput' | 'options'>;
+  AutocompleteProps?: Omit<
+    AutocompleteProps<any, any, any, any>,
+    'renderInput' | 'options'
+  > &
+    Omit<UseAutocompleteProps<any, any, any, any>, 'renderInput' | 'options'>;
 }
 
 export interface AsyncAutocompleteComponent {
@@ -50,15 +60,15 @@ const AsyncAutocomplete = forwardRef<
     inputValue: searchText,
     onOpen() {
       setOpen(true);
-      onOpen && onOpen();
+      onOpen?.();
     },
     onClose() {
       setOpen(false);
-      onClose && onClose();
+      onClose?.();
     },
-    onInputChange(event, value) {
+    onInputChange(_event, value) {
       setSearchText(value);
-      onInputChange && onInputChange();
+      onInputChange?.();
     },
     renderInput: (params) => (
       <TextField

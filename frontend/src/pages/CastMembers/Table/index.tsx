@@ -1,28 +1,35 @@
-import React, { useEffect, useCallback, useRef, useState, useContext, MutableRefObject, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-
 import { Button, IconButton } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import { format, parseISO } from 'date-fns';
 import { invert } from 'lodash';
-import * as Yup from 'yup';
-
-import DefaultTable, {
-  MuiDataTableRefComponent,
-  TableColumn,
-} from '../../../components/Table';
 import { useSnackbar } from 'notistack';
+import type React from 'react';
 import {
-  CastMember,
-  CastMemberTypeMap,
-  ListResponse,
-} from '../../../util/models';
+  type MutableRefObject,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { Link } from 'react-router-dom';
+import * as Yup from 'yup';
 import DeleteDialog from '../../../components/DeleteDialog';
 import LoadingContext from '../../../components/Loading/LoadingContext';
+import DefaultTable, {
+  type MuiDataTableRefComponent,
+  type TableColumn,
+} from '../../../components/Table';
+import FilterResetButton from '../../../components/Table/FilterResetButton';
 import useDeleteCollection from '../../../hooks/useDeleteCollection';
 import useFilter from '../../../hooks/useFilter';
 import castMemberHttp from '../../../util/http/cast-member-http';
-import FilterResetButton from '../../../components/Table/FilterResetButton';
+import {
+  type CastMember,
+  CastMemberTypeMap,
+  type ListResponse,
+} from '../../../util/models';
 
 const castMemberNames = Object.values(CastMemberTypeMap);
 
@@ -50,7 +57,7 @@ const columnsDefinition: TableColumn[] = [
       filterOptions: {
         names: castMemberNames,
       },
-      customBodyRender(value, tableMeta, updateValue) {
+      customBodyRender(value, _tableMeta, _updateValue) {
         return CastMemberTypeMap[value] !== undefined ? (
           <span>{CastMemberTypeMap[value]}</span>
         ) : (
@@ -65,7 +72,7 @@ const columnsDefinition: TableColumn[] = [
     width: '10%',
     options: {
       filter: false,
-      customBodyRender(value, tableMeta, updateValue) {
+      customBodyRender(value, _tableMeta, _updateValue) {
         return <span>{format(parseISO(value), 'dd/MM/yyyy')}</span>;
       },
     },
@@ -77,7 +84,7 @@ const columnsDefinition: TableColumn[] = [
     options: {
       sort: false,
       filter: false,
-      customBodyRender: (value, tableMeta) => {
+      customBodyRender: (_value, tableMeta) => {
         return (
           <IconButton
             color={'secondary'}
@@ -119,9 +126,7 @@ const Table: React.FC = () => {
     rowsToDelete,
     setRowsToDelete,
   } = useDeleteCollection();
-  const tableRef = useRef() as MutableRefObject<
-    MuiDataTableRefComponent
-  >;
+  const tableRef = useRef() as MutableRefObject<MuiDataTableRefComponent>;
   const extraFilter = useMemo(
     () => ({
       createValidationSchema: () => {
@@ -178,7 +183,7 @@ const Table: React.FC = () => {
     ? [typeFilterValue]
     : [];
 
-  const serverSideFilterList = columns.map((c) => []);
+  const serverSideFilterList = columns.map((_c) => []);
   if (typeFilterValue) {
     serverSideFilterList[indexColumnType] = [typeFilterValue];
   }
@@ -225,10 +230,9 @@ const Table: React.FC = () => {
       per_page: debouncedFilterState.pagination.per_page,
       sort: debouncedFilterState.order.sort,
       dir: debouncedFilterState.order.dir,
-      ...(debouncedFilterState.extraFilter &&
-        debouncedFilterState.extraFilter.type && {
-          type: debouncedFilterState.extraFilter.type,
-        }),
+      ...(debouncedFilterState.extraFilter?.type && {
+        type: debouncedFilterState.extraFilter.type,
+      }),
     });
     return () => {
       subscribed.current = false;
@@ -254,7 +258,7 @@ const Table: React.FC = () => {
 
     castMemberHttp
       .deleteCollection({ ids })
-      .then((response) => {
+      .then((_response) => {
         enqueueSnackbar('Registros excluidos com sucesso!', {
           variant: 'success',
         });

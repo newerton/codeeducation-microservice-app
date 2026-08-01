@@ -21,7 +21,7 @@ export function useHasClient(clientName: string) {
       return false;
     }
     const countRoles = keycloak.resourceAccess?.[clientName]?.roles.length;
-    return !countRoles ? false : true;
+    return !!countRoles;
   }, [initialized, keycloak, clientName]);
 
   return hasRole;

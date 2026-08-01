@@ -1,17 +1,21 @@
-import React, { MutableRefObject, useCallback, useImperativeHandle } from 'react';
+import {
+  FormControl,
+  type FormControlProps,
+  FormHelperText,
+  Typography,
+} from '@material-ui/core';
+import React, {
+  type MutableRefObject,
+  useCallback,
+  useImperativeHandle,
+} from 'react';
 import AsyncAutocomplete, {
-  AsyncAutocompleteComponent,
+  type AsyncAutocompleteComponent,
 } from '../../../../components/AsyncAutocomplete';
 import GridSelected from '../../../../components/GridSelected';
 import GridSelectedItem from '../../../../components/GridSelectedItem';
-import {
-  Typography,
-  FormControl,
-  FormControlProps,
-  FormHelperText,
-} from '@material-ui/core';
-import useHttpHandled from '../../../../hooks/useHttpHandled';
 import useCollectionManager from '../../../../hooks/useCollectionManager';
+import useHttpHandled from '../../../../hooks/useHttpHandled';
 import castMemberHttp from '../../../../util/http/cast-member-http';
 
 interface CastMemberFieldProps
@@ -37,9 +41,8 @@ const CastMemberField = React.forwardRef<
     castMembers,
     setCastMembers,
   );
-  const autocompleteRef = React.useRef() as MutableRefObject<
-    AsyncAutocompleteComponent
-  >;
+  const autocompleteRef =
+    React.useRef() as MutableRefObject<AsyncAutocompleteComponent>;
 
   const fetchOptions = useCallback(
     (searchText) => {
@@ -68,7 +71,7 @@ const CastMemberField = React.forwardRef<
           freeSolo: true,
           getOptionLabel: (option) => option.name,
           getOptionSelected: (option, value) => option.id === value.id,
-          onChange: (event, value) => addItem(value),
+          onChange: (_event, value) => addItem(value),
           disabled,
         }}
         fetchOptions={fetchOptions}

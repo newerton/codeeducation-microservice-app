@@ -1,6 +1,6 @@
-import { Video } from '../../util/models';
-import { AxiosError } from 'axios';
-import { AnyAction } from 'redux';
+import type { AxiosError } from 'axios';
+import type { AnyAction } from 'redux';
+import type { Video } from '../../util/models';
 
 export interface FileUpload {
   progress: number;

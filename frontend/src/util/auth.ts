@@ -1,5 +1,5 @@
+import type { AuthClientInitOptions } from '@react-keycloak/core';
 import Keycloak from 'keycloak-js';
-import { AuthClientInitOptions } from '@react-keycloak/core';
 
 const keyCloakCredentials = JSON.parse(process.env.REACT_APP_KEYCLOAK_JSON!);
 const authServerUrl = keyCloakCredentials['auth-server-url'];

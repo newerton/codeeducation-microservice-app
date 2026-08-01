@@ -1,26 +1,26 @@
-import React, {
-  useRef,
-  useCallback,
-  RefAttributes,
+import {
+  FormControl,
+  type FormControlProps,
+  FormHelperText,
+  Typography,
+  useTheme,
+} from '@material-ui/core';
+import {
+  type MutableRefObject,
+  type RefAttributes,
   forwardRef,
-  MutableRefObject,
+  useCallback,
   useImperativeHandle,
+  useRef,
 } from 'react';
 import AsyncAutocomplete, {
-  AsyncAutocompleteComponent,
+  type AsyncAutocompleteComponent,
 } from '../../../../components/AsyncAutocomplete';
 import GridSelected from '../../../../components/GridSelected';
 import GridSelectedItem from '../../../../components/GridSelectedItem';
-import {
-  Typography,
-  FormControl,
-  FormControlProps,
-  FormHelperText,
-  useTheme,
-} from '@material-ui/core';
+import useCollectionManager from '../../../../hooks/useCollectionManager';
 import useHttpHandled from '../../../../hooks/useHttpHandled';
 import genreHttp from '../../../../util/http/genre-http';
-import useCollectionManager from '../../../../hooks/useCollectionManager';
 import { getGenresFromCategory } from '../../../../util/model-filters';
 
 interface GenreFieldProps extends RefAttributes<GenreFieldComponent> {
@@ -40,22 +40,15 @@ export interface GenreFieldComponent {
 const GenreField = forwardRef<GenreFieldComponent, GenreFieldProps>(
   (props, ref) => {
     const autocompleteHttp = useHttpHandled();
-    const {
-      genres,
-      setGenres,
-      categories,
-      setCategories,
-      error,
-      disabled,
-    } = props;
+    const { genres, setGenres, categories, setCategories, error, disabled } =
+      props;
     const { addItem, removeItem } = useCollectionManager(genres, setGenres);
     const { removeItem: removeCategory } = useCollectionManager(
       categories,
       setCategories,
     );
-    const autocompleteRef = useRef() as MutableRefObject<
-      AsyncAutocompleteComponent
-    >;
+    const autocompleteRef =
+      useRef() as MutableRefObject<AsyncAutocompleteComponent>;
     const theme = useTheme();
 
     const fetchOptions = useCallback(
@@ -86,7 +79,7 @@ const GenreField = forwardRef<GenreFieldComponent, GenreFieldProps>(
             freeSolo: true,
             getOptionLabel: (option) => option.name,
             getOptionSelected: (option, value) => option.id === value.id,
-            onChange: (event, value) => addItem(value),
+            onChange: (_event, value) => addItem(value),
             disabled,
           }}
           fetchOptions={fetchOptions}

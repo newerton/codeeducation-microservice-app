@@ -1,12 +1,12 @@
-import React from 'react';
-import { useState, useMemo, useEffect } from 'react';
-import LoadingContext from '../LoadingContext';
+import type React from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   addGlobalRequestInterceptor,
   addGlobalResponseInterceptor,
   removeGlobalRequestInterceptor,
   removeGlobalResponseInterceptor,
 } from '../../../util/http';
+import LoadingContext from '../LoadingContext';
 
 const LoadingProvider: React.FC = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -15,7 +15,7 @@ const LoadingProvider: React.FC = ({ children }) => {
   useMemo(() => {
     let isSubscribed = true;
     const requestIds = addGlobalRequestInterceptor((config) => {
-      if (isSubscribed && !config.headers.hasOwnProperty('x-ignore-loading')) {
+      if (isSubscribed && !Object.hasOwn(config.headers, 'x-ignore-loading')) {
         setLoading(true);
         setCountRequest((prevCountRequest) => prevCountRequest + 1);
       }
@@ -24,13 +24,19 @@ const LoadingProvider: React.FC = ({ children }) => {
 
     const responseIds = addGlobalResponseInterceptor(
       (response) => {
-        if (isSubscribed && !response.config.headers.hasOwnProperty('x-ignore-loading')) {
+        if (
+          isSubscribed &&
+          !Object.hasOwn(response.config.headers, 'x-ignore-loading')
+        ) {
           decrementCountRequest();
         }
         return response;
       },
       (error) => {
-        if (isSubscribed && !error.config.headers.hasOwnProperty('x-ignore-loading')) {
+        if (
+          isSubscribed &&
+          !Object.hasOwn(error.config.headers, 'x-ignore-loading')
+        ) {
           decrementCountRequest();
         }
         return Promise.reject(error);
@@ -42,7 +48,7 @@ const LoadingProvider: React.FC = ({ children }) => {
       removeGlobalRequestInterceptor(requestIds);
       removeGlobalResponseInterceptor(responseIds);
     };
-  }, []);
+  }, [decrementCountRequest]);
 
   useEffect(() => {
     if (!countRequest) {

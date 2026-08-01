@@ -1,5 +1,4 @@
-import React from 'react';
-import { Chip, createMuiTheme, MuiThemeProvider } from '@material-ui/core';
+import { Chip, MuiThemeProvider, createMuiTheme } from '@material-ui/core';
 import theme from '../../theme';
 
 const localTheme = createMuiTheme({

@@ -1,8 +1,7 @@
-import React, { useRef, useEffect, useState } from 'react';
-
-import { Switch, FormControlLabel } from '@material-ui/core';
+import { FormControlLabel, Switch } from '@material-ui/core';
 import { useField } from '@unform/core';
 import PropTypes from 'prop-types';
+import { useEffect, useRef, useState } from 'react';
 
 export default function SwitchButton({ name, label, loading }) {
   const ref = useRef(null);
@@ -15,11 +14,11 @@ export default function SwitchButton({ name, label, loading }) {
       ref: ref.current,
       path: 'dataset.value',
     });
-  }, [ref.current, fieldName]); // eslint-disable-line
+  }, [fieldName, registerField]); // eslint-disable-line
 
   useEffect(() => {
     if (defaultValue) setValues(defaultValue);
-  }, [fieldName, defaultValue]);
+  }, [defaultValue]);
 
   return (
     <>
@@ -28,7 +27,7 @@ export default function SwitchButton({ name, label, loading }) {
           <Switch
             id={fieldName}
             name={fieldName}
-            onChange={e => setValues(e.target.checked)}
+            onChange={(e) => setValues(e.target.checked)}
             color="primary"
             ref={ref}
             data-value={values}

@@ -1,18 +1,17 @@
-import React from 'react';
-
-import MUIDataTable, {
-  MUIDataTableColumn,
-  MUIDataTableOptions,
-  MUIDataTableProps,
-} from 'mui-datatables';
-import DebouncedTableSearch from '../Table/DebouncedTableSearch';
-import { cloneDeep, merge, omit } from 'lodash';
 import {
   MuiThemeProvider,
-  Theme,
+  type Theme,
   useMediaQuery,
   useTheme,
 } from '@material-ui/core';
+import { cloneDeep, merge, omit } from 'lodash';
+import MUIDataTable, {
+  type MUIDataTableColumn,
+  type MUIDataTableOptions,
+  type MUIDataTableProps,
+} from 'mui-datatables';
+import React from 'react';
+import DebouncedTableSearch from '../Table/DebouncedTableSearch';
 
 export interface TableColumn extends MUIDataTableColumn {
   width?: string;
@@ -104,7 +103,7 @@ const Table = React.forwardRef<MuiDataTableRefComponent, TableProps>(
     }
 
     function setColumnsWitdh(columns: TableColumn[]) {
-      columns.forEach((column, key) => {
+      columns.forEach((column, _key) => {
         if (column.width) {
           // const overrides = theme.overrides as any;
           // overrides.MUIDataTableHeadCell.fixedHeader[
