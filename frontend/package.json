@@ -25,7 +25,7 @@
   "dependencies": {
     "@hookform/resolvers": "^5.7.1",
     "@react-keycloak/web": "^3.4.0",
-    "axios": "^1.19.0",
+    "axios": "^1.20.0",
     "classnames": "^2.5.1",
     "date-fns": "^4.4.0",
     "immutability-helper": "^3.1.1",
